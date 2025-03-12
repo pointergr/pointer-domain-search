@@ -7,6 +7,7 @@ Stable tag: 0.1.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Author URI: https://www.pointer.gr
 
 Ένα WordPress block για αναζήτηση διαθεσιμότητας domain names μέσω της υπηρεσίας Pointer.gr.
 
@@ -77,13 +78,13 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Screenshots ==
 
-1. Η σελίδα ρυθμίσεων του plugin: screenshot-1.png
-2. Προσθήκη του block στο Gutenberg: screenshot-2.png
-3. Το block Domain Search στο περιβάλλον επεξεργασίας Gutenberg: screenshot-3.png
-4. Το block Domain Search στο frontend της ιστοσελίδας: screenshot-4.png
-5. Παράδειγμα αναζήτησης με διαθέσιμα domain names: : screenshot-5.png
-6. Παράδειγμα αναζήτησης με μη διαθέσιμα domain names: : screenshot-6.png
-7. Διαφορετικά θέματα εμφάνισης (προεπιλογή, σκούρο, ανοιχτό, πολύχρωμο): screenshot-7.png
+1. Η σελίδα ρυθμίσεων του plugin
+2. Προσθήκη του block στο Gutenberg
+3. Το block Domain Search στο περιβάλλον επεξεργασίας Gutenberg
+4. Το block Domain Search στο frontend της ιστοσελίδας
+5. Παράδειγμα αναζήτησης με διαθέσιμα domain names:
+6. Παράδειγμα αναζήτησης με μη διαθέσιμα domain names:
+7. Διαφορετικά θέματα εμφάνισης (προεπιλογή, σκούρο, ανοιχτό, πολύχρωμο)
 
 == Changelog ==
 
