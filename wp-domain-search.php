@@ -22,7 +22,7 @@ define( 'WP_DOMAIN_SEARCH_VERSION', '0.1.0' );
 define( 'WP_DOMAIN_SEARCH_PATH', plugin_dir_path( __FILE__ ) );
 
 // Συμπερίληψη του Pointer API
-require_once plugin_dir_path( __FILE__ ) . 'pointer-api.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/pointer-api.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-settings.php';
 
 /**

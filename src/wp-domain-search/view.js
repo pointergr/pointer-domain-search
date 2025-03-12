@@ -20,10 +20,6 @@
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-metadata/#view-script
  */
 
-/* eslint-disable no-console */
-console.log( 'Hello World! (from create-block-wp-domain-search block)' );
-/* eslint-enable no-console */
-
 /**
  * Domain Search Functionality
  */
@@ -126,11 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const resultsHtml = Object.entries(results).map(([domain, available]) => {
-                const availableClass = available === 'true' || available === true
+				console.log(domain, available, typeof available);
+                const availableClass = available === '1' || available === 1
                     ? 'wp-domain-search-result-available'
                     : 'wp-domain-search-result-unavailable';
 
-                const availableText = available === 'true' || available === true
+                const availableText = available === '1' || available === 1
                     ? 'Διαθέσιμο'
                     : 'Μη διαθέσιμο';
 
