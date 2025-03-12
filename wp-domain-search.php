@@ -109,6 +109,10 @@ function wp_domain_search_ajax_handler() {
         // Σύνδεση στο API
         $pointer->login( $username, $password );
 
+		// Θέλουμε να αφαιρρέσουμε το tld αν υπάρχει από το domain
+		$domain = explode('.', $domain);
+		$domain = $domain[0];
+
         // Αναζήτηση διαθεσιμότητας domain
         $results = $pointer->domainCheck( $domain, $tlds );
 
@@ -197,13 +201,28 @@ function wp_domain_search_get_user_ip() {
  */
 function wp_domain_search_enqueue_theme_styles() {
     $theme = get_option('wp_domain_search_theme', 'default');
+    $valid_themes = array('default', 'dark', 'light', 'colorful');
+
+    // Έλεγχος εγκυρότητας θέματος
+    if (!in_array($theme, $valid_themes)) {
+        $theme = 'default';
+    }
 
     if ('default' !== $theme) {
+        // Δημιουργία του URL με βάση την απόλυτη διαδρομή για να αποφύγουμε λάθη
+        $css_url = plugin_dir_url(__FILE__) . 'assets/css/themes/' . $theme . '.css';
+
+        // Προσθήκη μοναδικού αναγνωριστικού για να αποφύγουμε την cache
+        $cache_buster = filemtime(plugin_dir_path(__FILE__) . 'assets/css/themes/' . $theme . '.css');
+        if (!$cache_buster) {
+            $cache_buster = time();
+        }
+
         wp_enqueue_style(
             'wp-domain-search-theme-' . $theme,
-            plugin_dir_url(__FILE__) . 'assets/css/themes/' . $theme . '.css',
+            $css_url,
             array(),
-            WP_DOMAIN_SEARCH_VERSION
+            $cache_buster
         );
     }
 }

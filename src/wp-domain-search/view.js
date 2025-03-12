@@ -122,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const resultsHtml = Object.entries(results).map(([domain, available]) => {
-				console.log(domain, available, typeof available);
                 const availableClass = available === '1' || available === 1
                     ? 'wp-domain-search-result-available'
                     : 'wp-domain-search-result-unavailable';

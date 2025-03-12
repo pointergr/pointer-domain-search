@@ -16,5 +16,13 @@
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^30.12.0"
-	}
+	},
+	"files": [
+		"build",
+		"includes",
+		"languages",
+		"assets",
+		"wp-domain-search.php",
+		"readme.txt"
+	]
 }
