@@ -137,44 +137,52 @@ function wp_domain_search_theme_section_callback() {
 
 /**
  * Κρυπτογράφηση του password
+ *
+ * @since 0.1.0
+ * @param string $password Το password προς κρυπτογράφηση.
+ * @return string Το κρυπτογραφημένο password.
  */
-function wp_domain_search_encrypt_password($password) {
-    // Αν το password είναι κενό, επιστροφή κενού
-    if (empty($password)) {
-        return '';
-    }
+function wp_domain_search_encrypt_password( $password ) {
+	// Αν το password είναι κενό, επιστροφή κενού
+	if ( empty( $password ) ) {
+		return '';
+	}
 
-    // Αν κάποιος προσπαθεί να αποθηκεύσει ήδη κρυπτογραφημένο password
-    if (strpos($password, 'wpds_') === 0) {
-        return $password;
-    }
+	// Αν κάποιος προσπαθεί να αποθηκεύσει ήδη κρυπτογραφημένο password
+	if ( 0 === strpos( $password, 'wpds_' ) ) {
+		return $password;
+	}
 
-    // Διατήρηση του password ως plain text με πρόθεμα, για απλότητα και αποφυγή σφαλμάτων
-    // Σε πραγματικό περιβάλλον θα χρησιμοποιούσαμε ασφαλή κρυπτογράφηση
-    return 'wpds_' . base64_encode($password);
+	// Διατήρηση του password ως plain text με πρόθεμα, για απλότητα και αποφυγή σφαλμάτων
+	// Σε πραγματικό περιβάλλον θα χρησιμοποιούσαμε ασφαλή κρυπτογράφηση
+	return 'wpds_' . base64_encode( $password );
 }
 
 /**
  * Αποκρυπτογράφηση του password
+ *
+ * @since 0.1.0
+ * @param string $encrypted Το κρυπτογραφημένο password.
+ * @return string Το αποκρυπτογραφημένο password.
  */
-function wp_domain_search_decrypt_password($encrypted) {
-    // Αν το κρυπτογραφημένο password είναι κενό ή δεν έχει το σωστό πρόθεμα
-    if (empty($encrypted) || strpos($encrypted, 'wpds_') !== 0) {
-        return '';
-    }
+function wp_domain_search_decrypt_password( $encrypted ) {
+	// Αν το κρυπτογραφημένο password είναι κενό ή δεν έχει το σωστό πρόθεμα
+	if ( empty( $encrypted ) || 0 !== strpos( $encrypted, 'wpds_' ) ) {
+		return '';
+	}
 
-    // Αφαίρεση του προθέματος και αποκρυπτογράφηση
-    $encrypted = substr($encrypted, 5);
+	// Αφαίρεση του προθέματος και αποκρυπτογράφηση
+	$encrypted = substr( $encrypted, 5 );
 
-    // Απλή αποκωδικοποίηση base64
-    $decrypted = base64_decode($encrypted);
+	// Απλή αποκωδικοποίηση base64
+	$decrypted = base64_decode( $encrypted );
 
-    // Έλεγχος αν η αποκωδικοποίηση ήταν επιτυχής
-    if ($decrypted === false) {
-        return '';
-    }
+	// Έλεγχος αν η αποκωδικοποίηση ήταν επιτυχής
+	if ( false === $decrypted ) {
+		return '';
+	}
 
-    return $decrypted;
+	return $decrypted;
 }
 
 /**

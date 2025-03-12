@@ -1,273 +1,320 @@
 <?php
 /**
  * Pointer API Class
+ *
+ * @package WpDomainSearch
+ * @since 0.1.0
  */
 
 // Exit if accessed directly
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
-class pointer_api {
+/**
+ * Class pointer_api
+ *
+ * Χειρίζεται την επικοινωνία με το API της Pointer.gr
+ *
+ * @since 0.1.0
+ */
+class Pointer_API {
 
-    protected $login_username = '';
-    protected $login_password = '';
-    protected $key;
+	/**
+	 * Username για το API
+	 *
+	 * @var string
+	 */
+	protected $login_username = '';
 
-    /**
-     * Αποστολή αιτήματος στο API
-     *
-     * @param string $xml XML request
-     * @return string Response from API
-     */
-    function request($xml) {
-        $url = "https://www.pointer.gr/api";
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, Array("Content-Type:text/xml", "testserver: 0")); // testserver 0=Normal registry, 1=test registry
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $xml);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 20);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);  // Verify SSL certificate
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);     // Verify hostname
+	/**
+	 * Password για το API
+	 *
+	 * @var string
+	 */
+	protected $login_password = '';
 
-        $response = curl_exec($curl);
+	/**
+	 * Κλειδί API μετά το login
+	 *
+	 * @var string
+	 */
+	protected $key;
 
-        // Έλεγχος σφαλμάτων cURL
-        if ($response === false) {
-            $error = curl_error($curl);
-            curl_close($curl);
-            throw new Exception("API connection error: " . $error);
-        }
+	/**
+	 * Αποστολή αιτήματος στο API
+	 *
+	 * @since 0.1.0
+	 * @param string $xml XML request.
+	 * @return string Response from API.
+	 * @throws Exception Σε περίπτωση σφάλματος επικοινωνίας.
+	 */
+	public function request( $xml )
+	{
+		$url = 'https://www.pointer.gr/api';
+		$curl = curl_init();
+		curl_setopt( $curl, CURLOPT_URL, $url );
+		curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Content-Type:text/xml', 'testserver: 0' ) ); // testserver 0=Normal registry, 1=test registry
+		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $curl, CURLOPT_HEADER, 0 );
+		curl_setopt( $curl, CURLOPT_POST, 1 );
+		curl_setopt( $curl, CURLOPT_POSTFIELDS, $xml );
+		curl_setopt( $curl, CURLOPT_TIMEOUT, 20 );
+		curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, true );  // Verify SSL certificate
+		curl_setopt( $curl, CURLOPT_SSL_VERIFYHOST, 2 );     // Verify hostname
 
-        $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
+		$response = curl_exec( $curl );
 
-        // Έλεγχος HTTP status code
-        if ($http_code >= 400) {
-            throw new Exception("API HTTP error: " . $http_code);
-        }
+		// Έλεγχος σφαλμάτων cURL
+		if ( false === $response ) {
+			$error = curl_error( $curl );
+			curl_close( $curl );
+			throw new Exception( 'API connection error: ' . $error );
+		}
 
-        return $response;
-    }
+		$http_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+		curl_close( $curl );
 
-    /**
-     * Login στο API
-     *
-     * @param string $username Username
-     * @param string $password Password
-     * @return string API key
-     */
-    function login($username = null, $password = null) {
-        // Έλεγχος και καθαρισμός παραμέτρων
-        if (!is_null($username)) {
-            $this->login_username = $username;
-        }
+		// Έλεγχος HTTP status code
+		if ( $http_code >= 400 ) {
+			throw new Exception( 'API HTTP error: ' . $http_code );
+		}
 
-        if (!is_null($password)) {
-            $this->login_password = $password;
-        }
+		return $response;
+	}
 
-        // Έλεγχος αν έχουν οριστεί username και password
-        if (empty($this->login_username) || empty($this->login_password)) {
-            throw new Exception("API credentials are missing or invalid");
-        }
+	/**
+	 * Login στο API
+	 *
+	 * @since 0.1.0
+	 * @param string $username Username.
+	 * @param string $password Password.
+	 * @return string API key.
+	 * @throws Exception Σε περίπτωση σφάλματος login.
+	 */
+	public function login( $username = null, $password = null )
+	{
+		// Έλεγχος και καθαρισμός παραμέτρων
+		if ( ! is_null( $username ) ) {
+			$this->login_username = $username;
+		}
 
-        $chksum = md5($this->login_username . $this->login_password . 'login');
-        $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
-            <pointer>
-                <login>
-                    	<password>" . md5($this->login_password) . "</password>
-                </login>
-                <username>" . $this->login_username . "</username>
-                <chksum>$chksum</chksum>
-            </pointer>";
+		if ( ! is_null( $password ) ) {
+			$this->login_password = $password;
+		}
 
-        $result = $this->request($xml);
+		// Έλεγχος αν έχουν οριστεί username και password
+		if ( empty( $this->login_username ) || empty( $this->login_password ) ) {
+			throw new Exception( 'API credentials are missing or invalid' );
+		}
 
-        $xml = $this->_parseRequest($result);
-        $xml_result = $xml->xpath('/pointer/login/key');
+		$chksum = md5( $this->login_username . $this->login_password . 'login' );
+		$xml = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+			<pointer>
+				<login>
+					<password>' . md5( $this->login_password ) . '</password>
+				</login>
+				<username>' . $this->login_username . '</username>
+				<chksum>' . $chksum . '</chksum>
+			</pointer>';
 
-        if(count($xml_result) > 0) {
-            $this->key = (string) $xml_result[0];
-            return $this->key;
-        } else {
-            throw new Exception("Login failed. Please check your API credentials.");
-        }
-    }
+		$result = $this->request( $xml );
 
-    /**
-     * Αποσύνδεση από το API
-     *
-     * @return boolean
-     */
-    function logout() {
-        // Έλεγχος αν έχει γίνει login
-        if (empty($this->key)) {
-            return false;
-        }
+		$xml = $this->parse_request( $result );
+		$xml_result = $xml->xpath( '/pointer/login/key' );
 
-        $chksum = md5($this->login_username . $this->login_password . 'logout' . $this->key);
-        $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                <pointer>
-                    <logout />
-                    <username>" . $this->login_username . "</username>
-                    <chksum>" . $chksum . "</chksum>
-                </pointer>";
+		if ( count( $xml_result ) > 0 ) {
+			$this->key = (string) $xml_result[0];
+			return $this->key;
+		} else {
+			throw new Exception( 'Login failed. Please check your API credentials.' );
+		}
+	}
 
-        $result = $this->request($xml);
-        $xml = $this->_parseRequest($result);
-        $xml_result = $xml->xpath('/pointer/logout/success');
-        if(count($xml_result) > 0) {
-            return (string) $xml_result[0] == 'true';
-        }
-        return false;
-    }
+	/**
+	 * Αποσύνδεση από το API
+	 *
+	 * @since 0.1.0
+	 * @return boolean Επιτυχία αποσύνδεσης.
+	 */
+	public function logout()
+	{
+		// Έλεγχος αν έχει γίνει login
+		if ( empty( $this->key ) ) {
+			return false;
+		}
 
-    /**
-     * Έλεγχος διαθεσιμότητας domain
-     *
-     * @param string $domain Domain name χωρίς TLD
-     * @param array $tlds Array με TLDs για έλεγχο
-     * @return array Αποτελέσματα διαθεσιμότητας
-     */
-    function domainCheck($domain, $tlds = NULL) {
-        // Έλεγχος αν έχει γίνει login
-        if (empty($this->key)) {
-            throw new Exception("You must login before checking domains");
-        }
+		$chksum = md5( $this->login_username . $this->login_password . 'logout' . $this->key );
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+				<pointer>
+					<logout />
+					<username>' . $this->login_username . '</username>
+					<chksum>' . $chksum . '</chksum>
+				</pointer>';
 
-        // Έλεγχος παραμέτρων
-        if (empty($domain)) {
-            throw new Exception("Domain name is required");
-        }
+		$result = $this->request( $xml );
+		$xml = $this->parse_request( $result );
+		$xml_result = $xml->xpath( '/pointer/logout/success' );
+		if ( count( $xml_result ) > 0 ) {
+			return 'true' === (string) $xml_result[0];
+		}
+		return false;
+	}
 
-        // Καθαρισμός domain
-        $domain = $this->sanitize_domain($domain);
+	/**
+	 * Έλεγχος διαθεσιμότητας domain
+	 *
+	 * @since 0.1.0
+	 * @param string $domain Domain name χωρίς TLD.
+	 * @param array  $tlds Array με TLDs για έλεγχο.
+	 * @return array Αποτελέσματα διαθεσιμότητας.
+	 * @throws Exception Σε περίπτωση σφάλματος ελέγχου.
+	 */
+	public function domainCheck( $domain, $tlds = null )
+	{
+		// Έλεγχος αν έχει γίνει login
+		if ( empty( $this->key ) ) {
+			throw new Exception( 'You must login before checking domains' );
+		}
 
-        // Έλεγχος και αρχικοποίηση TLDs
-        if (!is_array($tlds)) {
-            $tlds = array();
-        }
+		// Έλεγχος παραμέτρων
+		if ( empty( $domain ) ) {
+			throw new Exception( 'Domain name is required' );
+		}
 
-        if (empty($tlds)) {
-            throw new Exception("At least one TLD is required");
-        }
+		// Καθαρισμός domain
+		$domain = $this->sanitize_domain( $domain );
 
-        $tld_xml = '';
-        foreach ($tlds as $tld) {
-            // Καθαρισμός TLD
-            $tld = $this->sanitize_tld($tld);
-            if (!empty($tld)) {
-                $tld_xml .= "<tld>" . $tld . "</tld>";
-            }
-        }
+		// Έλεγχος και αρχικοποίηση TLDs
+		if ( ! is_array( $tlds ) ) {
+			$tlds = array();
+		}
 
-        // Έλεγχος αν έχουν μείνει έγκυρα TLDs
-        if (empty($tld_xml)) {
-            throw new Exception("No valid TLDs provided");
-        }
+		if ( empty( $tlds ) ) {
+			throw new Exception( 'At least one TLD is required' );
+		}
 
-        $chksum = md5($this->login_username . $this->login_password . 'domainCheck' . $this->key);
-        $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-            <pointer>
-                <domain-check>
-                    <tlds>
-                        " . $tld_xml . "
-                    </tlds>
-                    <domains>
-                        <domain>" . $domain . "</domain>
-                    </domains>
-                </domain-check>
-                <username>" . $this->login_username . "</username>
-                <chksum>" . $chksum . "</chksum>
-            </pointer>";
+		$tld_xml = '';
+		foreach ( $tlds as $tld ) {
+			// Καθαρισμός TLD
+			$tld = $this->sanitize_tld( $tld );
+			if ( ! empty( $tld ) ) {
+				$tld_xml .= '<tld>' . $tld . '</tld>';
+			}
+		}
 
-        $result = $this->request($xml);
-        $xml = $this->_parseRequest($result);
-        $xml_result = $xml->xpath('/pointer/login/key');
-        $tmp = $xml->xpath('/pointer/domain-check/result/item');
-        $arr = array();
-        foreach($tmp as $tld_result) {
-            $arr[(string) $tld_result->domain] = (string) $tld_result->available;
-        }
-        return $arr;
-    }
+		// Έλεγχος αν έχουν μείνει έγκυρα TLDs
+		if ( empty( $tld_xml ) ) {
+			throw new Exception( 'No valid TLDs provided' );
+		}
 
-    /**
-     * Επεξεργασία απόκρισης XML
-     *
-     * @param string $request_string XML response
-     * @return SimpleXMLElement
-     */
-    protected function _parseRequest($request_string) {
-        libxml_use_internal_errors(true);
-        $xml = simplexml_load_string($request_string);
+		$chksum = md5( $this->login_username . $this->login_password . 'domainCheck' . $this->key );
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<pointer>
+				<domain-check>
+					<tlds>
+						' . $tld_xml . '
+					</tlds>
+					<domains>
+						<domain>' . $domain . '</domain>
+					</domains>
+				</domain-check>
+				<username>' . $this->login_username . '</username>
+				<chksum>' . $chksum . '</chksum>
+			</pointer>';
 
-        if (!$xml) {
-            $errors = libxml_get_errors();
-            $error_msg = '';
-            foreach ($errors as $error) {
-                $error_msg .= $error->message . "\n";
-            }
-            libxml_clear_errors();
-            throw new Exception("XML parsing error: " . $error_msg);
-        }
+		$result = $this->request( $xml );
+		$xml = $this->parse_request( $result );
+		$xml_result = $xml->xpath( '/pointer/login/key' );
+		$tmp = $xml->xpath( '/pointer/domain-check/result/item' );
+		$arr = array();
+		foreach ( $tmp as $tld_result ) {
+			$arr[(string) $tld_result->domain] = (string) $tld_result->available;
+		}
+		return $arr;
+	}
 
-        $error = $xml->xpath('/pointer/error');
-        if (count($error) > 0) {
-            $code = (string) $error[0]->code;
-            $message = (string) $error[0]->message;
-            throw new Exception("API error ($code): $message");
-        }
+	/**
+	 * Επεξεργασία απόκρισης XML
+	 *
+	 * @since 0.1.0
+	 * @param string $request_string XML response.
+	 * @return SimpleXMLElement Επεξεργασμένο XML.
+	 * @throws Exception Σε περίπτωση σφάλματος επεξεργασίας XML.
+	 */
+	protected function parse_request( $request_string )
+	{
+		libxml_use_internal_errors( true );
+		$xml = simplexml_load_string( $request_string );
 
-        return $xml;
-    }
+		if ( ! $xml ) {
+			$errors = libxml_get_errors();
+			$error_msg = '';
+			foreach ( $errors as $error ) {
+				$error_msg .= $error->message . "\n";
+			}
+			libxml_clear_errors();
+			throw new Exception( 'XML parsing error: ' . $error_msg );
+		}
 
-    /**
-     * Καθαρισμός διαπιστευτηρίων
-     *
-     * @param string $credential Username ή password
-     * @return string Καθαρισμένο credential
-     */
-    protected function sanitize_credential($credential) {
-        // Αφαίρεση μη ασφαλών χαρακτήρων
-        return preg_replace('/[^a-zA-Z0-9@._-]/', '', $credential);
-    }
+		$error = $xml->xpath( '/pointer/error' );
+		if ( count( $error ) > 0 ) {
+			$code = (string) $error[0]->code;
+			$message = (string) $error[0]->message;
+			throw new Exception( 'API error (' . $code . '): ' . $message );
+		}
 
-    /**
-     * Καθαρισμός domain name
-     *
-     * @param string $domain Domain name
-     * @return string Καθαρισμένο domain name
-     */
-    protected function sanitize_domain($domain) {
-        // Αφαίρεση του TLD αν υπάρχει
-        if (strpos($domain, '.') !== false) {
-            $parts = explode('.', $domain);
-            $domain = $parts[0];
-        }
+		return $xml;
+	}
 
-        // Καθαρισμός μη έγκυρων χαρακτήρων
-        $domain = preg_replace('/[^a-z0-9-]/', '', strtolower($domain));
+	/**
+	 * Καθαρισμός διαπιστευτηρίων
+	 *
+	 * @since 0.1.0
+	 * @param string $credential Username ή password.
+	 * @return string Καθαρισμένο credential.
+	 */
+	protected function sanitize_credential( $credential )
+	{
+		// Αφαίρεση μη ασφαλών χαρακτήρων
+		return preg_replace( '/[^a-zA-Z0-9@._-]/', '', $credential );
+	}
 
-        // Περιορισμός μήκους
-        return substr($domain, 0, 63);
-    }
+	/**
+	 * Καθαρισμός domain name
+	 *
+	 * @since 0.1.0
+	 * @param string $domain Domain name.
+	 * @return string Καθαρισμένο domain name.
+	 */
+	protected function sanitize_domain( $domain )
+	{
+		// Αφαίρεση του TLD αν υπάρχει
+		if ( strpos( $domain, '.' ) !== false ) {
+			$parts = explode( '.', $domain );
+			$domain = $parts[0];
+		}
 
-    /**
-     * Καθαρισμός TLD
-     *
-     * @param string $tld TLD
-     * @return string Καθαρισμένο TLD
-     */
-    protected function sanitize_tld($tld) {
-        // Αφαίρεση της τελείας αν υπάρχει στην αρχή
-        $tld = ltrim($tld, '.');
+		// Καθαρισμός μη έγκυρων χαρακτήρων
+		$domain = preg_replace( '/[^a-z0-9-]/', '', strtolower( $domain ) );
 
-        // Καθαρισμός μη έγκυρων χαρακτήρων
-        return preg_replace('/[^a-z0-9.-]/', '', strtolower($tld));
-    }
+		// Περιορισμός μήκους
+		return substr( $domain, 0, 63 );
+	}
+
+	/**
+	 * Καθαρισμός TLD
+	 *
+	 * @since 0.1.0
+	 * @param string $tld TLD.
+	 * @return string Καθαρισμένο TLD.
+	 */
+	protected function sanitize_tld( $tld )
+	{
+		// Αφαίρεση της τελείας αν υπάρχει στην αρχή
+		$tld = ltrim( $tld, '.' );
+
+		// Καθαρισμός μη έγκυρων χαρακτήρων
+		return preg_replace( '/[^a-z0-9.-]/', '', strtolower( $tld ) );
+	}
 }
