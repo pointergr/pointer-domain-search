@@ -24,7 +24,7 @@ $tlds = explode('|', $tlds_string);
 // Αν λείπουν τα credentials δεν εμφανίζουμε τίποτα στον διαχειριστή
 if (empty($username) || empty($password)) {
     echo '<div ' . get_block_wrapper_attributes() . '>';
-    esc_html_e('Παρακαλούμε ορίστε username και password στις ρυθμίσεις του block ή στις γενικές ρυθμίσεις του plugin.', 'wp-domain-search');
+    esc_html_e('Παρακαλούμε ορίστε username και password στις ρυθμίσεις του plugin (Ρυθμίσεις > Domain Search).', 'wp-domain-search');
     echo '</div>';
     return;
 }

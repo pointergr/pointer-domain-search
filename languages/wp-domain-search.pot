@@ -101,39 +101,23 @@ msgid "Αποθήκευση Ρυθμίσεων"
 msgstr ""
 
 #: src/wp-domain-search/edit.js:35
-msgid "Ρυθμίσεις API"
-msgstr ""
-
-#: src/wp-domain-search/edit.js:38
-msgid "Εισάγετε το username σας από την υπηρεσία Pointer.gr"
-msgstr ""
-
-#: src/wp-domain-search/edit.js:45
-msgid "Εισάγετε το password σας από την υπηρεσία Pointer.gr"
-msgstr ""
-
-#: src/wp-domain-search/edit.js:52
-msgid "Εισάγετε τα TLDs διαχωρισμένα με | (π.χ. gr|com|net)"
-msgstr ""
-
-#: src/wp-domain-search/edit.js:57
 msgid "Προεπισκόπηση Αναζήτησης Domain"
 msgstr ""
 
-#: src/wp-domain-search/edit.js:63
+#: src/wp-domain-search/edit.js:41
 msgid "Εισάγετε όνομα domain..."
 msgstr ""
 
-#: src/wp-domain-search/edit.js:70
+#: src/wp-domain-search/edit.js:48
 msgid "Αναζήτηση"
 msgstr ""
 
-#: src/wp-domain-search/edit.js:82
-msgid "Σημείωση: Αυτή είναι μια προεπισκόπηση. Η πραγματική αναζήτηση θα λειτουργήσει στην προβολή της σελίδας."
+#: src/wp-domain-search/edit.js:63
+msgid "Σημείωση: Αυτή είναι μια προεπισκόπηση."
 msgstr ""
 
 #: src/wp-domain-search/render.php:17
-msgid "Παρακαλούμε ορίστε username και password στις ρυθμίσεις του block."
+msgid "Παρακαλούμε ορίστε username και password στις ρυθμίσεις του plugin (Ρυθμίσεις > Domain Search)."
 msgstr ""
 
 #: src/wp-domain-search/render.php:29

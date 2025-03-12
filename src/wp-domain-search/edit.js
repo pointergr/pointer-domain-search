@@ -11,8 +11,7 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Disabled } from '@wordpress/components';
+import { useBlockProps } from '@wordpress/block-editor';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -31,34 +30,10 @@ import './editor.scss';
  * @return {Element} Element to render.
  */
 export default function Edit({ attributes, setAttributes }) {
-	const { username, password, tlds } = attributes;
+	const { tlds } = attributes;
 
 	return (
 		<div { ...useBlockProps() }>
-			<InspectorControls>
-				<PanelBody title={__('Ρυθμίσεις API', 'wp-domain-search')}>
-					<TextControl
-						label={__('Username', 'wp-domain-search')}
-						value={username}
-						onChange={(value) => setAttributes({ username: value })}
-						help={__('Εισάγετε το username σας από την υπηρεσία Pointer.gr', 'wp-domain-search')}
-					/>
-					<TextControl
-						label={__('Password', 'wp-domain-search')}
-						value={password}
-						type="password"
-						onChange={(value) => setAttributes({ password: value })}
-						help={__('Εισάγετε το password σας από την υπηρεσία Pointer.gr', 'wp-domain-search')}
-					/>
-					<TextControl
-						label={__('TLDs', 'wp-domain-search')}
-						value={tlds}
-						onChange={(value) => setAttributes({ tlds: value })}
-						help={__('Εισάγετε τα TLDs διαχωρισμένα με | (π.χ. gr|com|net)', 'wp-domain-search')}
-					/>
-				</PanelBody>
-			</InspectorControls>
-
 			<div className="wp-domain-search-preview">
 				<h4>{__('Προεπισκόπηση Αναζήτησης Domain', 'wp-domain-search')}</h4>
 				<div className="wp-domain-search-form">
@@ -90,7 +65,7 @@ export default function Edit({ attributes, setAttributes }) {
 					</div>
 				</div>
 				<p className="wp-domain-search-note">
-					{__('Σημείωση: Αυτή είναι μια προεπισκόπηση. Η πραγματική αναζήτηση θα λειτουργήσει στην προβολή της σελίδας.', 'wp-domain-search')}
+					{__('Σημείωση: Αυτή είναι μια προεπισκόπηση.', 'wp-domain-search')}
 				</p>
 			</div>
 		</div>
