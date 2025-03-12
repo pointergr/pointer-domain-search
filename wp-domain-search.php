@@ -42,10 +42,63 @@ function create_block_wp_domain_search_block_init() {
         array(
             'ajaxUrl' => admin_url( 'admin-ajax.php' ),
             'styles' => get_option('wp_domain_search_theme', 'default'),
+            'nonce' => wp_create_nonce('wp_domain_search_nonce'),
         )
     );
 }
 add_action( 'init', 'create_block_wp_domain_search_block_init' );
+
+/**
+ * AJAX Handler για επαλήθευση των διαπιστευτηρίων API
+ */
+function wp_domain_search_verify_credentials() {
+    // Έλεγχος nonce για ασφάλεια
+    if (!check_ajax_referer('wp_domain_search_verify_nonce', 'nonce', false)) {
+        wp_send_json_error(__('Σφάλμα ασφαλείας. Παρακαλούμε ανανεώστε τη σελίδα και δοκιμάστε ξανά.', 'wp-domain-search'));
+        return;
+    }
+
+    // Ανάκτηση credentials από τις ρυθμίσεις
+    $username = get_option('wp_domain_search_username', '');
+    $encrypted_password = get_option('wp_domain_search_password', '');
+    $password = '';
+
+    // Αποκρυπτογράφηση του password αν υπάρχει
+    if (!empty($encrypted_password)) {
+        $password = wp_domain_search_decrypt_password($encrypted_password);
+    }
+
+    // Έλεγχος αν έχουν οριστεί τα credentials
+    if (empty($username) || empty($password)) {
+        wp_send_json_error(__('Τα διαπιστευτήρια API δεν έχουν οριστεί. Παρακαλούμε συμπληρώστε τα παραπάνω και αποθηκεύστε τις ρυθμίσεις.', 'wp-domain-search'));
+        return;
+    }
+
+    // Debug info - εμφάνιση μόνο για διαχειριστές
+    if (current_user_can('manage_options')) {
+        error_log('Attempting API login with username: ' . $username . ' and password length: ' . strlen($password));
+    }
+
+    try {
+        // Δημιουργία νέου αντικειμένου Pointer API
+        $pointer = new pointer_api();
+
+        // Σύνδεση στο API
+        $key = $pointer->login($username, $password);
+
+        // Αποσύνδεση από το API
+        $pointer->logout();
+
+        if (!empty($key)) {
+            wp_send_json_success(__('Η σύνδεση με το API της Pointer.gr ήταν επιτυχής!', 'wp-domain-search'));
+        } else {
+            wp_send_json_error(__('Αποτυχία σύνδεσης. Ο server επέστρεψε κενό κλειδί API.', 'wp-domain-search'));
+        }
+    } catch (Exception $e) {
+        wp_send_json_error(__('Σφάλμα API: ', 'wp-domain-search') . $e->getMessage());
+    }
+}
+add_action('wp_ajax_wp_domain_search_verify_credentials', 'wp_domain_search_verify_credentials');
 
 /**
  * Handle AJAX domain search request
@@ -79,21 +132,20 @@ function wp_domain_search_ajax_handler() {
 
     // Ανάκτηση credentials από τις ρυθμίσεις
     $username = get_option('wp_domain_search_username', '');
-    $password = get_option('wp_domain_search_password', '');
+    $encrypted_password = get_option('wp_domain_search_password', '');
+    $password = '';
 
-    // Αν δεν υπάρχουν κεντρικά credentials, ανάκτηση από το block
-    if (empty($username) || empty($password)) {
-        // Ανάκτηση ρυθμίσεων block για το συγκεκριμένο post
-        global $post;
-        $blocks = parse_blocks( $post->post_content );
+    // Debug info
+    if (current_user_can('manage_options')) {
+        error_log('Encrypted password from options: ' . $encrypted_password);
+    }
 
-        // Εύρεση του block αναζήτησης και ανάκτηση των credentials
-        foreach ( $blocks as $block ) {
-            if ( 'create-block/wp-domain-search' === $block['blockName'] ) {
-                $username = isset( $block['attrs']['username'] ) ? $block['attrs']['username'] : '';
-                $password = isset( $block['attrs']['password'] ) ? $block['attrs']['password'] : '';
-                break;
-            }
+    // Αποκρυπτογράφηση του password αν υπάρχει
+    if (!empty($encrypted_password)) {
+        $password = wp_domain_search_decrypt_password($encrypted_password);
+        // Debug info
+        if (current_user_can('manage_options')) {
+            error_log('Decrypted password length: ' . strlen($password));
         }
     }
 
@@ -125,6 +177,8 @@ function wp_domain_search_ajax_handler() {
         // Επιστροφή των αποτελεσμάτων
         wp_send_json_success( $results );
     } catch ( Exception $e ) {
+        // Καταγραφή του σφάλματος για debugging
+        error_log('Pointer API Error: ' . $e->getMessage());
         wp_send_json_error( 'Σφάλμα API: ' . $e->getMessage() );
     }
 }
@@ -137,7 +191,7 @@ function wp_domain_search_check_rate_limit() {
     $user_ip = wp_domain_search_get_user_ip();
 
     // Ανάκτηση ρυθμίσεων rate limiting
-    $max_requests = get_option('wp_domain_search_rate_limit', 10);
+    $max_requests = absint(get_option('wp_domain_search_rate_limit', 10));
     $time_window = 60 * 5; // 5 λεπτά σε δευτερόλεπτα
 
     // Παίρνουμε το ιστορικό αιτημάτων για αυτή την IP
