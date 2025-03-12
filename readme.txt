@@ -1,8 +1,8 @@
-=== WP Domain Search ===
+=== Wp Domain Search ===
 Contributors: wpcoders
 Tags: domain, search, pointer, whois, dns
 Requires at least: 6.7
-Tested up to: 6.9
+Tested up to: 6.8
 Stable tag: 0.1.0
 Requires PHP: 7.4
 License: GPLv2 or later

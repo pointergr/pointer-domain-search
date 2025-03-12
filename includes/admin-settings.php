@@ -118,21 +118,21 @@ add_action('admin_init', 'wp_domain_search_register_settings');
  * Callback για section API
  */
 function wp_domain_search_api_section_callback() {
-    echo '<p>' . __('Συμπληρώστε τα διαπιστευτήρια σας για το API της Pointer.gr', 'wp-domain-search') . '</p>';
+    echo '<p>' . esc_html__('Συμπληρώστε τα διαπιστευτήρια σας για το API της Pointer.gr', 'wp-domain-search') . '</p>';
 }
 
 /**
  * Callback για section Rate Limiting
  */
 function wp_domain_search_rate_limit_section_callback() {
-    echo '<p>' . __('Ρύθμιση περιορισμών για την αποφυγή κατάχρησης του API', 'wp-domain-search') . '</p>';
+    echo '<p>' . esc_html__('Ρύθμιση περιορισμών για την αποφυγή κατάχρησης του API', 'wp-domain-search') . '</p>';
 }
 
 /**
  * Callback για section Themes
  */
 function wp_domain_search_theme_section_callback() {
-    echo '<p>' . __('Επιλέξτε το θέμα εμφάνισης για το block αναζήτησης', 'wp-domain-search') . '</p>';
+    echo '<p>' . esc_html__('Επιλέξτε το θέμα εμφάνισης για το block αναζήτησης', 'wp-domain-search') . '</p>';
 }
 
 /**
@@ -210,14 +210,14 @@ function wp_domain_search_username_render() {
  * Render function για το password
  */
 function wp_domain_search_password_render() {
-    $encrypted_password = get_option('wp_domain_search_password');
-    $password = ''; // Δεν εμφανίζουμε το πραγματικό password για λόγους ασφαλείας
+    // Ανάκτηση και αποκρυπτογράφηση του αποθηκευμένου password
+    $encrypted_password = get_option('wp_domain_search_password', '');
 
     // Αν υπάρχει αποθηκευμένο password, βάζουμε placeholder
     $placeholder = empty($encrypted_password) ? '' : '••••••••••••••••';
     ?>
     <input type="password" name="wp_domain_search_password" value="" placeholder="<?php echo esc_attr($placeholder); ?>" class="regular-text">
-    <p class="description"><?php _e('Άφησέ το κενό αν δεν θέλεις να αλλάξεις το αποθηκευμένο password', 'wp-domain-search'); ?></p>
+    <p class="description"><?php esc_html_e('Άφησέ το κενό αν δεν θέλεις να αλλάξεις το αποθηκευμένο password', 'wp-domain-search'); ?></p>
     <?php
 }
 
@@ -228,7 +228,7 @@ function wp_domain_search_rate_limit_render() {
     $rate_limit = absint(get_option('wp_domain_search_rate_limit', 10));
     ?>
     <input type="number" name="wp_domain_search_rate_limit" value="<?php echo esc_attr($rate_limit); ?>" min="1" max="100" class="small-text">
-    <p class="description"><?php _e('Συνιστώμενη τιμή: 10-20 αιτήσεις ανά 5 λεπτά ανά IP', 'wp-domain-search'); ?></p>
+    <p class="description"><?php esc_html_e('Συνιστώμενη τιμή: 10-20 αιτήσεις ανά 5 λεπτά ανά IP', 'wp-domain-search'); ?></p>
     <?php
 }
 
@@ -270,7 +270,7 @@ function wp_domain_search_settings_page() {
         // Έλεγχος αν υπάρχουν credentials
         if (!empty($username) && !empty($password)) {
             echo '<div class="notice notice-info is-dismissible"><p>' .
-                 __('Οι ρυθμίσεις ενημερώθηκαν. Τα διαπιστευτήρια API έχουν αποθηκευτεί.', 'wp-domain-search') .
+                 esc_html__('Οι ρυθμίσεις ενημερώθηκαν. Τα διαπιστευτήρια API έχουν αποθηκευτεί.', 'wp-domain-search') .
                  '</p></div>';
         }
     }
@@ -287,10 +287,10 @@ function wp_domain_search_settings_page() {
         </form>
 
         <div class="card">
-            <h2><?php _e('Επαλήθευση Διαπιστευτηρίων API', 'wp-domain-search'); ?></h2>
-            <p><?php _e('Για να επαληθεύσετε ότι τα διαπιστευτήρια API λειτουργούν σωστά, πατήστε το παρακάτω κουμπί:', 'wp-domain-search'); ?></p>
+            <h2><?php esc_html_e('Επαλήθευση Διαπιστευτηρίων API', 'wp-domain-search'); ?></h2>
+            <p><?php esc_html_e('Για να επαληθεύσετε ότι τα διαπιστευτήρια API λειτουργούν σωστά, πατήστε το παρακάτω κουμπί:', 'wp-domain-search'); ?></p>
             <button type="button" id="verify_api_credentials" class="button button-secondary">
-                <?php _e('Επαλήθευση Διαπιστευτηρίων', 'wp-domain-search'); ?>
+                <?php esc_html_e('Επαλήθευση Διαπιστευτηρίων', 'wp-domain-search'); ?>
             </button>
             <div id="api_credentials_result" style="margin-top: 10px;"></div>
         </div>
@@ -300,14 +300,14 @@ function wp_domain_search_settings_page() {
     jQuery(document).ready(function($) {
         $('#verify_api_credentials').on('click', function() {
             var $resultArea = $('#api_credentials_result');
-            $resultArea.html('<span style="color: #999;"><?php _e('Επαλήθευση...', 'wp-domain-search'); ?></span>');
+            $resultArea.html('<span style="color: #999;"><?php esc_html_e('Επαλήθευση...', 'wp-domain-search'); ?></span>');
 
             $.ajax({
                 url: ajaxurl,
                 type: 'POST',
                 data: {
                     action: 'wp_domain_search_verify_credentials',
-                    nonce: '<?php echo wp_create_nonce('wp_domain_search_verify_nonce'); ?>'
+                    nonce: '<?php echo esc_attr(wp_create_nonce('wp_domain_search_verify_nonce')); ?>'
                 },
                 success: function(response) {
                     if (response.success) {
@@ -317,7 +317,7 @@ function wp_domain_search_settings_page() {
                     }
                 },
                 error: function() {
-                    $resultArea.html('<span style="color: red;"><?php _e('Σφάλμα επικοινωνίας με τον διακομιστή', 'wp-domain-search'); ?></span>');
+                    $resultArea.html('<span style="color: red;"><?php esc_html_e('Σφάλμα επικοινωνίας με τον διακομιστή', 'wp-domain-search'); ?></span>');
                 }
             });
         });

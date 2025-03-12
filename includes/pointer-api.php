@@ -52,35 +52,60 @@ class Pointer_API {
 	public function request( $xml )
 	{
 		$url = 'https://www.pointer.gr/api';
-		$curl = curl_init();
-		curl_setopt( $curl, CURLOPT_URL, $url );
-		curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Content-Type:text/xml', 'testserver: 0' ) ); // testserver 0=Normal registry, 1=test registry
-		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $curl, CURLOPT_HEADER, 0 );
-		curl_setopt( $curl, CURLOPT_POST, 1 );
-		curl_setopt( $curl, CURLOPT_POSTFIELDS, $xml );
-		curl_setopt( $curl, CURLOPT_TIMEOUT, 20 );
-		curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, true );  // Verify SSL certificate
-		curl_setopt( $curl, CURLOPT_SSL_VERIFYHOST, 2 );     // Verify hostname
 
-		$response = curl_exec( $curl );
+		// Χρησιμοποιούμε τις WordPress HTTP λειτουργίες
+		$args = array(
+			'body'        => $xml,
+			'headers'     => array(
+				'Content-Type' => 'text/xml',
+				'testserver'   => '0', // 0=Normal registry, 1=test registry
+			),
+			'timeout'     => 20,
+			'sslverify'   => true,
+		);
 
-		// Έλεγχος σφαλμάτων cURL
-		if ( false === $response ) {
-			$error = curl_error( $curl );
+		$response = function_exists('wp_remote_post') ? wp_remote_post( $url, $args ) : null;
+
+		// Έλεγχος σφαλμάτων HTTP
+		if ( $response === null ) {
+			// Fallback to cURL if wp_remote_post is not available
+			$curl = curl_init();
+			curl_setopt( $curl, CURLOPT_URL, $url );
+			curl_setopt( $curl, CURLOPT_HTTPHEADER, array( 'Content-Type:text/xml', 'testserver: 0' ) );
+			curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt( $curl, CURLOPT_HEADER, 0 );
+			curl_setopt( $curl, CURLOPT_POST, 1 );
+			curl_setopt( $curl, CURLOPT_POSTFIELDS, $xml );
+			curl_setopt( $curl, CURLOPT_TIMEOUT, 20 );
+			curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER, true );
+			curl_setopt( $curl, CURLOPT_SSL_VERIFYHOST, 2 );
+
+			$body = curl_exec( $curl );
+
+			if ( false === $body ) {
+				$error = curl_error( $curl );
+				curl_close( $curl );
+				throw new Exception( 'API connection error: ' . htmlspecialchars( $error, ENT_QUOTES, 'UTF-8' ) );
+			}
+
+			$http_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 			curl_close( $curl );
-			throw new Exception( 'API connection error: ' . $error );
-		}
+		} else {
+			// WordPress HTTP API διαθέσιμο
+			if ( function_exists('is_wp_error') && is_wp_error( $response ) ) {
+				throw new Exception( 'API connection error: ' . htmlspecialchars( $response->get_error_message(), ENT_QUOTES, 'UTF-8' ) );
+			}
 
-		$http_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
-		curl_close( $curl );
+			$http_code = function_exists('wp_remote_retrieve_response_code') ? wp_remote_retrieve_response_code( $response ) : 0;
+			$body = function_exists('wp_remote_retrieve_body') ? wp_remote_retrieve_body( $response ) : '';
+		}
 
 		// Έλεγχος HTTP status code
 		if ( $http_code >= 400 ) {
-			throw new Exception( 'API HTTP error: ' . $http_code );
+			throw new Exception( 'API HTTP error: ' . htmlspecialchars( $http_code, ENT_QUOTES, 'UTF-8' ) );
 		}
 
-		return $response;
+		return $body;
 	}
 
 	/**
@@ -254,14 +279,14 @@ class Pointer_API {
 				$error_msg .= $error->message . "\n";
 			}
 			libxml_clear_errors();
-			throw new Exception( 'XML parsing error: ' . $error_msg );
+			throw new Exception( 'XML parsing error: ' . htmlspecialchars( $error_msg, ENT_QUOTES, 'UTF-8' ) );
 		}
 
 		$error = $xml->xpath( '/pointer/error' );
 		if ( count( $error ) > 0 ) {
 			$code = (string) $error[0]->code;
 			$message = (string) $error[0]->message;
-			throw new Exception( 'API error (' . $code . '): ' . $message );
+			throw new Exception( 'API error (' . htmlspecialchars( $code, ENT_QUOTES, 'UTF-8' ) . '): ' . htmlspecialchars( $message, ENT_QUOTES, 'UTF-8' ) );
 		}
 
 		return $xml;

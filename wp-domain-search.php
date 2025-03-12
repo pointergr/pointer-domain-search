@@ -79,9 +79,12 @@ function wp_domain_search_verify_credentials() {
 	}
 
 	// Debug info - εμφάνιση μόνο για διαχειριστές
+	// Σημείωση: αυτό μόνο κατά την ανάπτυξη
+	/*
 	if ( current_user_can( 'manage_options' ) ) {
 		error_log( 'Attempting API login with username: ' . $username . ' and password length: ' . strlen( $password ) );
 	}
+	*/
 
 	try {
 		// Δημιουργία νέου αντικειμένου Pointer API
@@ -172,6 +175,16 @@ function wp_domain_search_ajax_handler() {
 		$domain = explode( '.', $domain );
 		$domain = $domain[0];
 
+		// Έλεγχος rate limit
+		if ( ! wp_domain_search_check_rate_limit() ) {
+			wp_send_json_error( 'Έχετε υπερβεί το όριο αιτημάτων. Παρακαλώ προσπαθήστε ξανά αργότερα.' );
+		}
+
+		// Μόνο για debugging - δεν χρειάζεται σε παραγωγή
+		/*
+		error_log( 'Attempting domain check for: ' . $domain . ' with TLDs: ' . implode( ', ', $tlds ) );
+		*/
+
 		// Αναζήτηση διαθεσιμότητας domain
 		$results = $pointer->domainCheck( $domain, $tlds );
 
@@ -253,18 +266,18 @@ function wp_domain_search_log_request() {
 }
 
 /**
- * Βοηθητική συνάρτηση για να πάρουμε την IP του χρήστη
+ * Ανάκτηση IP διεύθυνσης χρήστη
  *
  * @since 0.1.0
- * @return string IP του χρήστη
+ * @return string IP διεύθυνση χρήστη.
  */
 function wp_domain_search_get_user_ip() {
 	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-		$ip = $_SERVER['HTTP_CLIENT_IP'];
+		$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CLIENT_IP'] ) );
 	} elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		$ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
 	} else {
-		$ip = $_SERVER['REMOTE_ADDR'];
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 	}
 	return apply_filters( 'wp_domain_search_user_ip', $ip );
 }
