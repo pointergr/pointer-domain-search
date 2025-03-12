@@ -1,0 +1,52 @@
+/**
+ * Dark Theme για το Domain Search Block
+ */
+
+.wp-block-create-block-wp-domain-search {
+    background-color: #222;
+    color: #eee;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.wp-block-create-block-wp-domain-search .wp-domain-search-input {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+.wp-block-create-block-wp-domain-search .wp-domain-search-button {
+    background-color: #0073aa;
+    color: #fff;
+}
+
+.wp-block-create-block-wp-domain-search .wp-domain-search-button:hover {
+    background-color: #005a87;
+}
+
+.wp-block-create-block-wp-domain-search .wp-domain-search-tld-label {
+    color: #ccc;
+}
+
+.wp-block-create-block-wp-domain-search .wp-domain-search-result-item {
+    border-bottom: 1px solid #444;
+}
+
+.wp-block-create-block-wp-domain-search .wp-domain-search-result-available {
+    color: #4CAF50;
+}
+
+.wp-block-create-block-wp-domain-search .wp-domain-search-result-unavailable {
+    color: #F44336;
+}
+
+.wp-block-create-block-wp-domain-search .wp-domain-search-loading-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #0073aa;
+}
+
+.wp-block-create-block-wp-domain-search .wp-domain-search-error {
+    background-color: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid #F44336;
+}
