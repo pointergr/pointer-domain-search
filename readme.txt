@@ -77,10 +77,13 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Screenshots ==
 
-1. Το block Domain Search στο περιβάλλον επεξεργασίας Gutenberg
-2. Το block Domain Search στο frontend της ιστοσελίδας
-3. Η σελίδα ρυθμίσεων του plugin
-4. Διαφορετικά θέματα εμφάνισης (προεπιλογή, σκούρο, ανοιχτό, πολύχρωμο)
+1. Η σελίδα ρυθμίσεων του plugin: screenshot-1.png
+2. Προσθήκη του block στο Gutenberg: screenshot-2.png
+3. Το block Domain Search στο περιβάλλον επεξεργασίας Gutenberg: screenshot-3.png
+4. Το block Domain Search στο frontend της ιστοσελίδας: screenshot-4.png
+5. Παράδειγμα αναζήτησης με διαθέσιμα domain names: : screenshot-5.png
+6. Παράδειγμα αναζήτησης με μη διαθέσιμα domain names: : screenshot-6.png
+7. Διαφορετικά θέματα εμφάνισης (προεπιλογή, σκούρο, ανοιχτό, πολύχρωμο): screenshot-7.png
 
 == Changelog ==
 
@@ -106,3 +109,4 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * Χρησιμοποιεί ασφαλείς AJAX κλήσεις προς το API
 * Περιορίζει τον αριθμό αιτημάτων ανά IP (rate limiting)
 * Προσφέρει κεντρική διαχείριση των διαπιστευτηρίων API
+
