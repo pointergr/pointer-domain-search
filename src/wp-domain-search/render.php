@@ -23,7 +23,7 @@ $tlds = explode('|', $tlds_string);
 
 // Αν λείπουν τα credentials δεν εμφανίζουμε τίποτα στον διαχειριστή
 if (empty($username) || empty($password)) {
-    echo '<div ' . get_block_wrapper_attributes() . '>';
+    echo '<div ' . wp_kses_post(get_block_wrapper_attributes()) . '>';
     esc_html_e('Παρακαλούμε ορίστε username και password στις ρυθμίσεις του plugin (Ρυθμίσεις > Domain Search).', 'wp-domain-search');
     echo '</div>';
     return;
@@ -39,7 +39,7 @@ $theme_class = 'wp-domain-search-theme-' . $theme;
 $wrapper_classes = array('wp-domain-search-wrapper', $theme_class);
 ?>
 
-<div <?php echo get_block_wrapper_attributes(array('class' => implode(' ', $wrapper_classes))); ?> id="<?php echo esc_attr($block_id); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('wp_domain_search_nonce')); ?>">
+<div <?php echo wp_kses_post(get_block_wrapper_attributes(array('class' => implode(' ', $wrapper_classes)))); ?> id="<?php echo esc_attr($block_id); ?>" data-nonce="<?php echo esc_attr(wp_create_nonce('wp_domain_search_nonce')); ?>">
     <div class="wp-domain-search-form">
         <div class="wp-domain-search-input-wrap">
             <input type="text" class="wp-domain-search-input" placeholder="<?php esc_attr_e('Εισάγετε όνομα domain...', 'wp-domain-search'); ?>" required />
