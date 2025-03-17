@@ -2,8 +2,8 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Domain Search 0.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-domain-search\n"
+"Project-Id-Version: Pointer Domain Search 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pointer-domain-search\n"
 "Last-Translator: Admin <admin@example.com>\n"
 "Language-Team: Greek\n"
 "MIME-Version: 1.0\n"
@@ -12,12 +12,12 @@ msgstr ""
 "POT-Creation-Date: 2023-09-15T12:00:00+00:00\n"
 "PO-Revision-Date: 2023-09-15T12:00:00+00:00\n"
 "X-Generator: WP-CLI 2.5.0\n"
-"X-Domain: wp-domain-search\n"
+"X-Domain: pointer-domain-search\n"
 "Language: el\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
-msgid "Wp Domain Search"
+msgid "Pointer Domain Search"
 msgstr "Αναζήτηση Domain"
 
 #. Description of the plugin
@@ -102,86 +102,86 @@ msgstr "Πολύχρωμο"
 msgid "Αποθήκευση Ρυθμίσεων"
 msgstr "Αποθήκευση Ρυθμίσεων"
 
-#: src/wp-domain-search/edit.js:35
+#: src/pointer-domain-search/edit.js:35
 msgid "Προεπισκόπηση Αναζήτησης Domain"
 msgstr "Προεπισκόπηση Αναζήτησης Domain"
 
-#: src/wp-domain-search/edit.js:41
+#: src/pointer-domain-search/edit.js:41
 msgid "Εισάγετε όνομα domain..."
 msgstr "Εισάγετε όνομα domain..."
 
-#: src/wp-domain-search/edit.js:48
+#: src/pointer-domain-search/edit.js:48
 msgid "Αναζήτηση"
 msgstr "Αναζήτηση"
 
-#: src/wp-domain-search/edit.js:63
+#: src/pointer-domain-search/edit.js:63
 msgid "Σημείωση: Αυτή είναι μια προεπισκόπηση."
 msgstr "Σημείωση: Αυτή είναι μια προεπισκόπηση."
 
-#: src/wp-domain-search/render.php:17
+#: src/pointer-domain-search/render.php:17
 msgid "Παρακαλούμε ορίστε username και password στις ρυθμίσεις του plugin (Ρυθμίσεις > Domain Search)."
 msgstr "Παρακαλούμε ορίστε username και password στις ρυθμίσεις του plugin (Ρυθμίσεις > Domain Search)."
 
-#: src/wp-domain-search/render.php:29
+#: src/pointer-domain-search/render.php:29
 msgid "Εισάγετε όνομα domain..."
 msgstr "Εισάγετε όνομα domain..."
 
-#: src/wp-domain-search/render.php:30
+#: src/pointer-domain-search/render.php:30
 msgid "Αναζήτηση"
 msgstr "Αναζήτηση"
 
-#: src/wp-domain-search/render.php:45
+#: src/pointer-domain-search/render.php:45
 msgid "Αναζήτηση διαθεσιμότητας..."
 msgstr "Αναζήτηση διαθεσιμότητας..."
 
-#: src/wp-domain-search/view.js:39
+#: src/pointer-domain-search/view.js:39
 msgid "Παρακαλούμε εισάγετε ένα όνομα domain."
 msgstr "Παρακαλούμε εισάγετε ένα όνομα domain."
 
-#: src/wp-domain-search/view.js:48
+#: src/pointer-domain-search/view.js:48
 msgid "Παρακαλούμε επιλέξτε τουλάχιστον ένα TLD."
 msgstr "Παρακαλούμε επιλέξτε τουλάχιστον ένα TLD."
 
-#: src/wp-domain-search/view.js:86
+#: src/pointer-domain-search/view.js:86
 msgid "Υπήρξε ένα σφάλμα κατά την αναζήτηση."
 msgstr "Υπήρξε ένα σφάλμα κατά την αναζήτηση."
 
-#: src/wp-domain-search/view.js:93
+#: src/pointer-domain-search/view.js:93
 msgid "Υπήρξε ένα σφάλμα κατά την αναζήτηση: "
 msgstr "Υπήρξε ένα σφάλμα κατά την αναζήτηση: "
 
-#: src/wp-domain-search/view.js:99
+#: src/pointer-domain-search/view.js:99
 msgid "Δεν βρέθηκαν αποτελέσματα."
 msgstr "Δεν βρέθηκαν αποτελέσματα."
 
-#: src/wp-domain-search/view.js:106
+#: src/pointer-domain-search/view.js:106
 msgid "Διαθέσιμο"
 msgstr "Διαθέσιμο"
 
-#: src/wp-domain-search/view.js:107
+#: src/pointer-domain-search/view.js:107
 msgid "Μη διαθέσιμο"
 msgstr "Μη διαθέσιμο"
 
-#: wp-domain-search.php:56
+#: pointer-domain-search.php:56
 msgid "Σφάλμα ασφαλείας. Παρακαλούμε ανανεώστε τη σελίδα και δοκιμάστε ξανά."
 msgstr "Σφάλμα ασφαλείας. Παρακαλούμε ανανεώστε τη σελίδα και δοκιμάστε ξανά."
 
-#: wp-domain-search.php:61
+#: pointer-domain-search.php:61
 msgid "Πολλές αιτήσεις. Παρακαλούμε δοκιμάστε ξανά σε λίγα λεπτά."
 msgstr "Πολλές αιτήσεις. Παρακαλούμε δοκιμάστε ξανά σε λίγα λεπτά."
 
-#: wp-domain-search.php:66
+#: pointer-domain-search.php:66
 msgid "Λείπουν απαραίτητα δεδομένα."
 msgstr "Λείπουν απαραίτητα δεδομένα."
 
-#: wp-domain-search.php:76
+#: pointer-domain-search.php:76
 msgid "Μη έγκυρα TLDs."
 msgstr "Μη έγκυρα TLDs."
 
-#: wp-domain-search.php:102
+#: pointer-domain-search.php:102
 msgid "Δεν έχουν οριστεί τα διαπιστευτήρια API. Παρακαλούμε επικοινωνήστε με τον διαχειριστή."
 msgstr "Δεν έχουν οριστεί τα διαπιστευτήρια API. Παρακαλούμε επικοινωνήστε με τον διαχειριστή."
 
-#: wp-domain-search.php:123
+#: pointer-domain-search.php:123
 msgid "Σφάλμα API: "
 msgstr "Σφάλμα API: "

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name:       Wp Domain Search
+ * Plugin Name:       Pointer Domain Search
  * Description:       WP block για αναζήτηση domain names μέσω της υπηρεσίας Pointer.gr.
  * Version:           0.1.0
  * Requires at least: 6.7
@@ -9,7 +9,7 @@
  * Author:            The WordPress Contributors
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       wp-domain-search
+ * Text Domain:       pointer-domain-search
  *
  * @package WpDomainSearch
  */
@@ -19,8 +19,8 @@ if (! defined('ABSPATH')) {
 }
 
 // Ορισμός σταθερών
-define('WP_DOMAIN_SEARCH_VERSION', '0.1.0');
-define('WP_DOMAIN_SEARCH_PATH', plugin_dir_path(__FILE__));
+define('POINTER_DOMAIN_SEARCH_VERSION', '0.1.0');
+define('POINTER_DOMAIN_SEARCH_PATH', plugin_dir_path(__FILE__));
 
 // Συμπερίληψη του Pointer API
 require_once plugin_dir_path(__FILE__) . 'includes/pointer-api.php';
@@ -34,22 +34,22 @@ require_once plugin_dir_path(__FILE__) . 'includes/admin-settings.php';
  * @since 0.1.0
  * @see https://developer.wordpress.org/reference/functions/register_block_type/
  */
-function create_block_wp_domain_search_block_init()
+function create_block_pointer_domain_search_block_init()
 {
-	register_block_type(__DIR__ . '/build/wp-domain-search');
+	register_block_type(__DIR__ . '/build/pointer-domain-search');
 
 	// Localize script for AJAX URL
 	wp_localize_script(
-		'create-block-wp-domain-search-view-script',
+		'create-block-pointer-domain-search-view-script',
 		'wpDomainSearch',
 		array(
 			'ajaxUrl' => admin_url('admin-ajax.php'),
-			'styles'  => get_option('wp_domain_search_theme', 'default'),
-			'nonce'   => wp_create_nonce('wp_domain_search_nonce'),
+			'styles'  => get_option('pointer_domain_search_theme', 'default'),
+			'nonce'   => wp_create_nonce('pointer_domain_search_nonce'),
 		)
 	);
 }
-add_action('init', 'create_block_wp_domain_search_block_init');
+add_action('init', 'create_block_pointer_domain_search_block_init');
 
 /**
  * AJAX Handler για επαλήθευση των διαπιστευτηρίων API
@@ -57,27 +57,27 @@ add_action('init', 'create_block_wp_domain_search_block_init');
  * @since 0.1.0
  * @return void
  */
-function wp_domain_search_verify_credentials()
+function pointer_domain_search_verify_credentials()
 {
 	// Έλεγχος nonce για ασφάλεια
-	if (! check_ajax_referer('wp_domain_search_verify_nonce', 'nonce', false)) {
-		wp_send_json_error(__('Σφάλμα ασφαλείας. Παρακαλούμε ανανεώστε τη σελίδα και δοκιμάστε ξανά.', 'wp-domain-search'));
+	if (! check_ajax_referer('pointer_domain_search_verify_nonce', 'nonce', false)) {
+		wp_send_json_error(__('Σφάλμα ασφαλείας. Παρακαλούμε ανανεώστε τη σελίδα και δοκιμάστε ξανά.', 'pointer-domain-search'));
 		return;
 	}
 
 	// Ανάκτηση credentials από τις ρυθμίσεις
-	$username          = get_option('wp_domain_search_username', '');
-	$encrypted_password = get_option('wp_domain_search_password', '');
+	$username          = get_option('pointer_domain_search_username', '');
+	$encrypted_password = get_option('pointer_domain_search_password', '');
 	$password          = '';
 
 	// Αποκρυπτογράφηση του password αν υπάρχει
 	if (! empty($encrypted_password)) {
-		$password = wp_domain_search_decrypt_password($encrypted_password);
+		$password = pointer_domain_search_decrypt_password($encrypted_password);
 	}
 
 	// Έλεγχος αν έχουν οριστεί τα credentials
 	if (empty($username) || empty($password)) {
-		wp_send_json_error(__('Τα διαπιστευτήρια API δεν έχουν οριστεί. Παρακαλούμε συμπληρώστε τα παραπάνω και αποθηκεύστε τις ρυθμίσεις.', 'wp-domain-search'));
+		wp_send_json_error(__('Τα διαπιστευτήρια API δεν έχουν οριστεί. Παρακαλούμε συμπληρώστε τα παραπάνω και αποθηκεύστε τις ρυθμίσεις.', 'pointer-domain-search'));
 		return;
 	}
 
@@ -92,15 +92,15 @@ function wp_domain_search_verify_credentials()
 		$pointer->logout();
 
 		if (! empty($key)) {
-			wp_send_json_success(__('Η σύνδεση με το API της Pointer.gr ήταν επιτυχής!', 'wp-domain-search'));
+			wp_send_json_success(__('Η σύνδεση με το API της Pointer.gr ήταν επιτυχής!', 'pointer-domain-search'));
 		} else {
-			wp_send_json_error(__('Αποτυχία σύνδεσης. Ο server επέστρεψε κενό κλειδί API.', 'wp-domain-search'));
+			wp_send_json_error(__('Αποτυχία σύνδεσης. Ο server επέστρεψε κενό κλειδί API.', 'pointer-domain-search'));
 		}
 	} catch (Exception $e) {
-		wp_send_json_error(__('Σφάλμα API: ', 'wp-domain-search') . $e->getMessage());
+		wp_send_json_error(__('Σφάλμα API: ', 'pointer-domain-search') . $e->getMessage());
 	}
 }
-add_action('wp_ajax_wp_domain_search_verify_credentials', 'wp_domain_search_verify_credentials');
+add_action('wp_ajax_pointer_domain_search_verify_credentials', 'pointer_domain_search_verify_credentials');
 
 /**
  * Handle AJAX domain search request
@@ -108,15 +108,15 @@ add_action('wp_ajax_wp_domain_search_verify_credentials', 'wp_domain_search_veri
  * @since 0.1.0
  * @return void
  */
-function wp_domain_search_ajax_handler()
+function pointer_domain_search_ajax_handler()
 {
 	// Έλεγχος nonce για ασφάλεια
-	if (! check_ajax_referer('wp_domain_search_nonce', 'nonce', false)) {
+	if (! check_ajax_referer('pointer_domain_search_nonce', 'nonce', false)) {
 		wp_send_json_error('Σφάλμα ασφαλείας. Παρακαλούμε ανανεώστε τη σελίδα και δοκιμάστε ξανά.');
 	}
 
 	// Έλεγχος rate limiting
-	if (! wp_domain_search_check_rate_limit()) {
+	if (! pointer_domain_search_check_rate_limit()) {
 		wp_send_json_error('Πολλές αιτήσεις. Παρακαλούμε δοκιμάστε ξανά σε λίγα λεπτά.');
 	}
 
@@ -138,8 +138,8 @@ function wp_domain_search_ajax_handler()
 	$tlds = array_map('sanitize_text_field', $tlds);
 
 	// Ανάκτηση credentials από τις ρυθμίσεις
-	$username          = get_option('wp_domain_search_username', '');
-	$encrypted_password = get_option('wp_domain_search_password', '');
+	$username          = get_option('pointer_domain_search_username', '');
+	$encrypted_password = get_option('pointer_domain_search_password', '');
 	$password          = '';
 
 	// Debug info
@@ -153,7 +153,7 @@ function wp_domain_search_ajax_handler()
 
 	// Αποκρυπτογράφηση του password αν υπάρχει
 	if (! empty($encrypted_password)) {
-		$password = wp_domain_search_decrypt_password($encrypted_password);
+		$password = pointer_domain_search_decrypt_password($encrypted_password);
 		// Debug info
 		if (current_user_can('manage_options')) {
 			if (defined('WP_DEBUG') && WP_DEBUG === true) {
@@ -181,7 +181,7 @@ function wp_domain_search_ajax_handler()
 		$domain = $domain[0];
 
 		// Έλεγχος rate limit
-		if (! wp_domain_search_check_rate_limit()) {
+		if (! pointer_domain_search_check_rate_limit()) {
 			wp_send_json_error('Έχετε υπερβεί το όριο αιτημάτων. Παρακαλώ προσπαθήστε ξανά αργότερα.');
 		}
 
@@ -192,7 +192,7 @@ function wp_domain_search_ajax_handler()
 		$pointer->logout();
 
 		// Καταγραφή της επιτυχημένης αίτησης για rate limiting
-		wp_domain_search_log_request();
+		pointer_domain_search_log_request();
 
 		// Επιστροφή των αποτελεσμάτων
 		wp_send_json_success($results);
@@ -213,17 +213,17 @@ function wp_domain_search_ajax_handler()
  * @since 0.1.0
  * @return bool Αν το αίτημα επιτρέπεται
  */
-function wp_domain_search_check_rate_limit()
+function pointer_domain_search_check_rate_limit()
 {
 	// Παίρνουμε τη διεύθυνση IP του χρήστη
-	$user_ip = wp_domain_search_get_user_ip();
+	$user_ip = pointer_domain_search_get_user_ip();
 
 	// Ανάκτηση ρυθμίσεων rate limiting
-	$max_requests = absint(get_option('wp_domain_search_rate_limit', 10));
+	$max_requests = absint(get_option('pointer_domain_search_rate_limit', 10));
 	$time_window  = 60 * 5; // 5 λεπτά σε δευτερόλεπτα
 
 	// Παίρνουμε το ιστορικό αιτημάτων για αυτή την IP
-	$requests = get_transient('wp_domain_search_requests_' . md5($user_ip));
+	$requests = get_transient('pointer_domain_search_requests_' . md5($user_ip));
 
 	if (! $requests) {
 		$requests = array();
@@ -252,13 +252,13 @@ function wp_domain_search_check_rate_limit()
  * @since 0.1.0
  * @return void
  */
-function wp_domain_search_log_request()
+function pointer_domain_search_log_request()
 {
 	// Παίρνουμε τη διεύθυνση IP του χρήστη
-	$user_ip = wp_domain_search_get_user_ip();
+	$user_ip = pointer_domain_search_get_user_ip();
 
 	// Παίρνουμε το ιστορικό αιτημάτων για αυτή την IP
-	$requests = get_transient('wp_domain_search_requests_' . md5($user_ip));
+	$requests = get_transient('pointer_domain_search_requests_' . md5($user_ip));
 
 	if (! $requests) {
 		$requests = array();
@@ -268,7 +268,7 @@ function wp_domain_search_log_request()
 	$requests[] = time();
 
 	// Αποθήκευση του ιστορικού
-	set_transient('wp_domain_search_requests_' . md5($user_ip), $requests, 60 * 60); // Αποθήκευση για 1 ώρα
+	set_transient('pointer_domain_search_requests_' . md5($user_ip), $requests, 60 * 60); // Αποθήκευση για 1 ώρα
 }
 
 /**
@@ -277,7 +277,7 @@ function wp_domain_search_log_request()
  * @since 0.1.0
  * @return string IP διεύθυνση χρήστη.
  */
-function wp_domain_search_get_user_ip()
+function pointer_domain_search_get_user_ip()
 {
 	if (! empty($_SERVER['HTTP_CLIENT_IP'])) {
 		$ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CLIENT_IP']));
@@ -286,7 +286,7 @@ function wp_domain_search_get_user_ip()
 	} else {
 		$ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
 	}
-	return apply_filters('wp_domain_search_user_ip', $ip);
+	return apply_filters('pointer_domain_search_user_ip', $ip);
 }
 
 /**
@@ -295,9 +295,9 @@ function wp_domain_search_get_user_ip()
  * @since 0.1.0
  * @return void
  */
-function wp_domain_search_enqueue_theme_styles()
+function pointer_domain_search_enqueue_theme_styles()
 {
-	$theme        = get_option('wp_domain_search_theme', 'default');
+	$theme        = get_option('pointer_domain_search_theme', 'default');
 	$valid_themes = array('default', 'dark', 'light', 'colorful');
 
 	// Έλεγχος εγκυρότητας θέματος
@@ -316,14 +316,14 @@ function wp_domain_search_enqueue_theme_styles()
 		}
 
 		wp_enqueue_style(
-			'wp-domain-search-theme-' . $theme,
+			'pointer-domain-search-theme-' . $theme,
 			$css_url,
 			array(),
 			$cache_buster
 		);
 	}
 }
-add_action('wp_enqueue_scripts', 'wp_domain_search_enqueue_theme_styles');
+add_action('wp_enqueue_scripts', 'pointer_domain_search_enqueue_theme_styles');
 
 /**
  * Εκκίνηση του i18n
@@ -331,16 +331,16 @@ add_action('wp_enqueue_scripts', 'wp_domain_search_enqueue_theme_styles');
  * @since 0.1.0
  * @return void
  */
-function wp_domain_search_load_textdomain()
+function pointer_domain_search_load_textdomain()
 {
 	load_plugin_textdomain(
-		'wp-domain-search',
+		'pointer-domain-search',
 		false,
 		dirname(plugin_basename(__FILE__)) . '/languages'
 	);
 }
-add_action('plugins_loaded', 'wp_domain_search_load_textdomain');
+add_action('plugins_loaded', 'pointer_domain_search_load_textdomain');
 
 // Προσθήκη των AJAX endpoints
-add_action('wp_ajax_wp_domain_search', 'wp_domain_search_ajax_handler');
-add_action('wp_ajax_nopriv_wp_domain_search', 'wp_domain_search_ajax_handler');
+add_action('wp_ajax_pointer_domain_search', 'pointer_domain_search_ajax_handler');
+add_action('wp_ajax_nopriv_pointer_domain_search', 'pointer_domain_search_ajax_handler');

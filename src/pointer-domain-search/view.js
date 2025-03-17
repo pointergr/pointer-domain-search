@@ -25,15 +25,15 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    const searchForms = document.querySelectorAll('.wp-block-create-block-wp-domain-search');
+    const searchForms = document.querySelectorAll('.wp-block-create-block-pointer-domain-search');
 
     searchForms.forEach(form => {
-        const searchInput = form.querySelector('.wp-domain-search-input');
-        const searchButton = form.querySelector('.wp-domain-search-button');
-        const tldCheckboxes = form.querySelectorAll('.wp-domain-search-tld');
-        const searchResults = form.querySelector('.wp-domain-search-results');
-        const loadingDiv = form.querySelector('.wp-domain-search-loading');
-        const errorDiv = form.querySelector('.wp-domain-search-error');
+        const searchInput = form.querySelector('.pointer-domain-search-input');
+        const searchButton = form.querySelector('.pointer-domain-search-button');
+        const tldCheckboxes = form.querySelectorAll('.pointer-domain-search-tld');
+        const searchResults = form.querySelector('.pointer-domain-search-results');
+        const loadingDiv = form.querySelector('.pointer-domain-search-loading');
+        const errorDiv = form.querySelector('.pointer-domain-search-error');
         const nonce = form.getAttribute('data-nonce');
 
         // Event listener για το κουμπί αναζήτησης
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // AJAX αίτημα για αναζήτηση domain
             const formData = new FormData();
-            formData.append('action', 'wp_domain_search');
+            formData.append('action', 'pointer_domain_search');
             formData.append('nonce', nonce);
             formData.append('domain', domain);
             formData.append('tlds', JSON.stringify(selectedTlds));
@@ -123,15 +123,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const resultsHtml = Object.entries(results).map(([domain, available]) => {
                 const availableClass = available === '1' || available === 1
-                    ? 'wp-domain-search-result-available'
-                    : 'wp-domain-search-result-unavailable';
+                    ? 'pointer-domain-search-result-available'
+                    : 'pointer-domain-search-result-unavailable';
 
                 const availableText = available === '1' || available === 1
                     ? 'Διαθέσιμο'
                     : 'Μη διαθέσιμο';
 
                 return `
-                    <div class="wp-domain-search-result-item">
+                    <div class="pointer-domain-search-result-item">
                         <strong>${domain}</strong>: <span class="${availableClass}">${availableText}</span>
                     </div>
                 `;

@@ -5,17 +5,17 @@
  * Replace them with your own styles or remove the file completely.
  */
 
-.wp-block-create-block-wp-domain-search {
-	.wp-domain-search-form {
+.wp-block-create-block-pointer-domain-search {
+	.pointer-domain-search-form {
 		margin: 0 0 20px;
 	}
 
-	.wp-domain-search-input-wrap {
+	.pointer-domain-search-input-wrap {
 		display: flex;
 		margin-bottom: 10px;
 	}
 
-	.wp-domain-search-input {
+	.pointer-domain-search-input {
 		flex: 1;
 		padding: 10px;
 		border: 1px solid #ddd;
@@ -25,7 +25,7 @@
 		background-color: #fff;
 	}
 
-	.wp-domain-search-button {
+	.pointer-domain-search-button {
 		padding: 10px 20px;
 		background-color: #0073aa;
 		color: white;
@@ -36,17 +36,17 @@
 		white-space: nowrap;
 	}
 
-	.wp-domain-search-button:hover {
+	.pointer-domain-search-button:hover {
 		background-color: #005177;
 	}
 
-	.wp-domain-search-tlds {
+	.pointer-domain-search-tlds {
 		display: flex;
 		flex-wrap: wrap;
 		margin-top: 10px;
 	}
 
-	.wp-domain-search-tld-label {
+	.pointer-domain-search-tld-label {
 		margin-right: 15px;
 		margin-bottom: 5px;
 		display: flex;
@@ -54,39 +54,39 @@
 		cursor: pointer;
 	}
 
-	.wp-domain-search-tld-label input {
+	.pointer-domain-search-tld-label input {
 		margin-right: 5px;
 	}
 
-	.wp-domain-search-results {
+	.pointer-domain-search-results {
 		margin-top: 20px;
 	}
 
-	.wp-domain-search-result-item {
+	.pointer-domain-search-result-item {
 		padding: 10px 0;
 		border-bottom: 1px solid #f0f0f0;
 	}
 
-	.wp-domain-search-result-available {
+	.pointer-domain-search-result-available {
 		color: #4caf50;
 		font-weight: bold;
 	}
 
-	.wp-domain-search-result-unavailable {
+	.pointer-domain-search-result-unavailable {
 		color: #f44336;
 	}
 
-	.wp-domain-search-loading {
+	.pointer-domain-search-loading {
 		display: none;
 		text-align: center;
 		padding: 20px;
 	}
 
-	.wp-domain-search-loading.active {
+	.pointer-domain-search-loading.active {
 		display: block;
 	}
 
-	.wp-domain-search-loading-spinner {
+	.pointer-domain-search-loading-spinner {
 		display: inline-block;
 		width: 40px;
 		height: 40px;
@@ -101,26 +101,26 @@
 		to { transform: rotate(360deg); }
 	}
 
-	.wp-domain-search-error {
+	.pointer-domain-search-error {
 		color: #f44336;
 		padding: 10px;
 		display: none;
 	}
 
-	.wp-domain-search-error.active {
+	.pointer-domain-search-error.active {
 		display: block;
 	}
 }
 
 // Editor styles
 .editor-styles-wrapper {
-	.wp-domain-search-preview {
+	.pointer-domain-search-preview {
 		border: 1px solid #e2e4e7;
 		padding: 15px;
 		background-color: #f8f9f9;
 	}
 
-	.wp-domain-search-note {
+	.pointer-domain-search-note {
 		font-style: italic;
 		color: #757575;
 		font-size: 13px;

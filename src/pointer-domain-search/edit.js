@@ -34,26 +34,26 @@ export default function Edit({ attributes, setAttributes }) {
 
 	return (
 		<div { ...useBlockProps() }>
-			<div className="wp-domain-search-preview">
-				<h4>{__('Προεπισκόπηση Αναζήτησης Domain', 'wp-domain-search')}</h4>
-				<div className="wp-domain-search-form">
-					<div className="wp-domain-search-input-wrap">
+			<div className="pointer-domain-search-preview">
+				<h4>{__('Προεπισκόπηση Αναζήτησης Domain', 'pointer-domain-search')}</h4>
+				<div className="pointer-domain-search-form">
+					<div className="pointer-domain-search-input-wrap">
 						<input
 							type="text"
-							className="wp-domain-search-input"
-							placeholder={__('Εισάγετε όνομα domain...', 'wp-domain-search')}
+							className="pointer-domain-search-input"
+							placeholder={__('Εισάγετε όνομα domain...', 'pointer-domain-search')}
 							disabled
 						/>
 						<button
-							className="wp-domain-search-button"
+							className="pointer-domain-search-button"
 							disabled
 						>
-							{__('Αναζήτηση', 'wp-domain-search')}
+							{__('Αναζήτηση', 'pointer-domain-search')}
 						</button>
 					</div>
-					<div className="wp-domain-search-tlds">
+					<div className="pointer-domain-search-tlds">
 						{tlds.split('|').map((tld, index) => (
-							<label key={tld} className="wp-domain-search-tld-label">
+							<label key={tld} className="pointer-domain-search-tld-label">
 								<input
 									type="checkbox"
 									checked={index === 0}
@@ -64,8 +64,8 @@ export default function Edit({ attributes, setAttributes }) {
 						))}
 					</div>
 				</div>
-				<p className="wp-domain-search-note">
-					{__('Σημείωση: Αυτή είναι μια προεπισκόπηση.', 'wp-domain-search')}
+				<p className="pointer-domain-search-note">
+					{__('Σημείωση: Αυτή είναι μια προεπισκόπηση.', 'pointer-domain-search')}
 				</p>
 			</div>
 		</div>

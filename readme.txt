@@ -1,4 +1,4 @@
-=== Wp Domain Search ===
+=== Pointer Domain Search ===
 Contributors: wpcoders
 Tags: domain, search, pointer, whois, dns
 Requires at least: 6.7
@@ -13,7 +13,7 @@ Author URI: https://www.pointer.gr
 
 == Description ==
 
-Το WP Domain Search είναι ένα block που επιτρέπει στους επισκέπτες της ιστοσελίδας σας να αναζητούν τη διαθεσιμότητα domain names μέσω της υπηρεσίας Pointer.gr. Η λειτουργία αυτή είναι ιδανική για εταιρείες web hosting, παρόχους domain, ή οποιονδήποτε θέλει να προσφέρει αυτή την υπηρεσία στην ιστοσελίδα του.
+Το Pointer Domain Search είναι ένα block που επιτρέπει στους επισκέπτες της ιστοσελίδας σας να αναζητούν τη διαθεσιμότητα domain names μέσω της υπηρεσίας Pointer.gr. Η λειτουργία αυτή είναι ιδανική για εταιρείες web hosting, παρόχους domain, ή οποιονδήποτε θέλει να προσφέρει αυτή την υπηρεσία στην ιστοσελίδα του.
 
 **Χαρακτηριστικά**
 
@@ -32,7 +32,7 @@ Author URI: https://www.pointer.gr
 
 == Installation ==
 
-1. Ανεβάστε το φάκελο `wp-domain-search` στον κατάλογο `/wp-content/plugins/` του WordPress σας
+1. Ανεβάστε το φάκελο `pointer-domain-search` στον κατάλογο `/wp-content/plugins/` του WordPress σας
 2. Ενεργοποιήστε το plugin μέσω του μενού 'Plugins' στο WordPress
 3. Μεταβείτε στις Ρυθμίσεις > Domain Search για να ορίσετε τα διαπιστευτήρια API
 4. Προσθέστε το block "Domain Search" σε οποιαδήποτε σελίδα ή άρθρο

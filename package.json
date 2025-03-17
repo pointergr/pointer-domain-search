@@ -1,7 +1,7 @@
 {
-	"name": "wp-domain-search",
+	"name": "pointer-domain-search",
 	"version": "0.1.0",
-	"description": "Example block scaffolded with Create Block tool.",
+	"description": "WP block for domain search via Pointer.gr",
 	"author": "Thomas Papamichail",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
@@ -22,7 +22,7 @@
 		"includes",
 		"languages",
 		"assets",
-		"wp-domain-search.php",
+		"pointer-domain-search.php",
 		"readme.txt"
 	]
 }
