@@ -3,7 +3,7 @@
 /**
  * Plugin Name:       Pointer Domain Search
  * Description:       WP block για αναζήτηση domain names μέσω της υπηρεσίας Pointer.gr.
- * Version:           0.1.0
+ * Version:           0.2.0
  * Requires at least: 6.7
  * Requires PHP:      7.4
  * Author:            The WordPress Contributors
@@ -19,7 +19,7 @@ if (! defined('ABSPATH')) {
 }
 
 // Ορισμός σταθερών
-define('POINTER_DOMAIN_SEARCH_VERSION', '0.1.0');
+define('POINTER_DOMAIN_SEARCH_VERSION', '0.2.0');
 define('POINTER_DOMAIN_SEARCH_PATH', plugin_dir_path(__FILE__));
 
 // Συμπερίληψη του Pointer API

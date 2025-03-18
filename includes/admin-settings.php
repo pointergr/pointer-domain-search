@@ -56,6 +56,20 @@ function pointer_domain_search_register_settings()
 		'pointer_domain_search_sanitize_theme'
 	);
 
+	// Προσθήκη νέας ρύθμισης για τα επιλεγμένα TLDs
+	register_setting(
+		'pointer_domain_search_settings',
+		'pointer_domain_search_selected_tlds',
+		'pointer_domain_search_sanitize_selected_tlds'
+	);
+
+	// Προσθήκη νέας ρύθμισης για την εμφάνιση του κουμπιού αγοράς
+	register_setting(
+		'pointer_domain_search_settings',
+		'pointer_domain_search_show_buy_button',
+		'pointer_domain_search_sanitize_checkbox'
+	);
+
 	// Προσθήκη section για API
 	add_settings_section(
 		'pointer_domain_search_api_section',
@@ -77,6 +91,22 @@ function pointer_domain_search_register_settings()
 		'pointer_domain_search_theme_section',
 		__('Θέματα Εμφάνισης', 'pointer-domain-search'),
 		'pointer_domain_search_theme_section_callback',
+		'pointer_domain_search_settings'
+	);
+
+	// Προσθήκη section για TLDs
+	add_settings_section(
+		'pointer_domain_search_tlds_section',
+		__('Επιλογή TLDs', 'pointer-domain-search'),
+		'pointer_domain_search_tlds_section_callback',
+		'pointer_domain_search_settings'
+	);
+
+	// Προσθήκη section για Προβολή Αγοράς
+	add_settings_section(
+		'pointer_domain_search_purchase_section',
+		__('Ρυθμίσεις Αγοράς', 'pointer-domain-search'),
+		'pointer_domain_search_purchase_section_callback',
 		'pointer_domain_search_settings'
 	);
 
@@ -114,6 +144,24 @@ function pointer_domain_search_register_settings()
 		'pointer_domain_search_settings',
 		'pointer_domain_search_theme_section'
 	);
+
+	// Προσθήκη πεδίων για TLDs
+	add_settings_field(
+		'pointer_domain_search_selected_tlds',
+		__('Επιλεγμένα TLDs', 'pointer-domain-search'),
+		'pointer_domain_search_selected_tlds_render',
+		'pointer_domain_search_settings',
+		'pointer_domain_search_tlds_section'
+	);
+
+	// Προσθήκη πεδίου για εμφάνιση κουμπιού αγοράς
+	add_settings_field(
+		'pointer_domain_search_show_buy_button',
+		__('Κουμπί Αγοράς', 'pointer-domain-search'),
+		'pointer_domain_search_show_buy_button_render',
+		'pointer_domain_search_settings',
+		'pointer_domain_search_purchase_section'
+	);
 }
 add_action('admin_init', 'pointer_domain_search_register_settings');
 
@@ -142,6 +190,22 @@ function pointer_domain_search_theme_section_callback()
 }
 
 /**
+ * Callback για section TLDs
+ */
+function pointer_domain_search_tlds_section_callback()
+{
+	echo '<p>' . esc_html__('Επιλέξτε τις καταλήξεις (TLDs) που θέλετε να εμφανίζονται στο block αναζήτησης domains', 'pointer-domain-search') . '</p>';
+}
+
+/**
+ * Callback για section Προβολή Αγοράς
+ */
+function pointer_domain_search_purchase_section_callback()
+{
+	echo '<p>' . esc_html__('Ρυθμίσεις για την εμφάνιση κουμπιού αγοράς', 'pointer-domain-search') . '</p>';
+}
+
+/**
  * Κρυπτογράφηση του password
  *
  * @since 0.1.0
@@ -150,9 +214,9 @@ function pointer_domain_search_theme_section_callback()
  */
 function pointer_domain_search_encrypt_password($password)
 {
-	// Αν το password είναι κενό, επιστροφή κενού
+	// Αν το password είναι κενό, επιστρέφουμε το υπάρχον password
 	if (empty($password)) {
-		return '';
+		return get_option('pointer_domain_search_password', '');
 	}
 
 	// Αν κάποιος προσπαθεί να αποθηκεύσει ήδη κρυπτογραφημένο password
@@ -203,6 +267,18 @@ function pointer_domain_search_sanitize_theme($theme)
 		return 'default';
 	}
 	return $theme;
+}
+
+/**
+ * Sanitize του checkbox
+ *
+ * @since 0.2.0
+ * @param string|bool $value Η τιμή του checkbox.
+ * @return bool Η καθαρισμένη τιμή (true ή false).
+ */
+function pointer_domain_search_sanitize_checkbox($value)
+{
+	return (bool) $value;
 }
 
 /**
@@ -262,6 +338,131 @@ function pointer_domain_search_theme_render()
 			<option value="<?php echo esc_attr($key); ?>" <?php selected($theme, $key); ?>><?php echo esc_html($value); ?></option>
 		<?php endforeach; ?>
 	</select>
+<?php
+}
+
+/**
+ * Sanitize των επιλεγμένων TLDs
+ *
+ * @since 0.2.0
+ * @param array $tlds Πίνακας με τα επιλεγμένα TLDs.
+ * @return array Καθαρισμένος πίνακας με τα επιλεγμένα TLDs.
+ */
+function pointer_domain_search_sanitize_selected_tlds($tlds)
+{
+	if (!is_array($tlds)) {
+		return array();
+	}
+
+	// Καθαρισμός των TLDs
+	$sanitized_tlds = array();
+	foreach ($tlds as $tld) {
+		$tld = sanitize_text_field($tld);
+		if (!empty($tld)) {
+			$sanitized_tlds[] = $tld;
+		}
+	}
+
+	return $sanitized_tlds;
+}
+
+/**
+ * Render function για τα επιλεγμένα TLDs
+ */
+function pointer_domain_search_selected_tlds_render()
+{
+	// Ανάκτηση των αποθηκευμένων TLDs
+	$selected_tlds = get_option('pointer_domain_search_selected_tlds', array());
+
+	// Ανάκτηση credentials από τις ρυθμίσεις
+	$username = get_option('pointer_domain_search_username', '');
+	$encrypted_password = get_option('pointer_domain_search_password', '');
+	$password = !empty($encrypted_password) ? pointer_domain_search_decrypt_password($encrypted_password) : '';
+
+	// Έλεγχος αν έχουν οριστεί τα credentials
+	if (empty($username) || empty($password)) {
+		echo '<div class="notice notice-warning inline"><p>' .
+			esc_html__('Παρακαλούμε συμπληρώστε και αποθηκεύστε τα διαπιστευτήρια API πρώτα για να δείτε τα διαθέσιμα TLDs.', 'pointer-domain-search') .
+			'</p></div>';
+		return;
+	}
+
+	// Προσπάθεια λήψης των διαθέσιμων TLDs από το API
+	try {
+		$pointer = new Pointer_API();
+		$pointer->login($username, $password);
+		$tld_pricing = $pointer->getTldPricing();
+		$pointer->logout();
+
+		if (empty($tld_pricing)) {
+			echo '<div class="notice notice-error inline"><p>' .
+				esc_html__('Δεν ήταν δυνατή η λήψη των διαθέσιμων TLDs από το API.', 'pointer-domain-search') .
+				'</p></div>';
+			return;
+		}
+
+		// Εμφάνιση των διαθέσιμων TLDs
+		echo '<fieldset>';
+		echo '<div class="pointer-domain-search-tlds-admin" style="max-height: 300px; overflow-y: auto; padding: 10px; border: 1px solid #ddd; margin-bottom: 15px;">';
+
+		foreach ($tld_pricing as $tld => $info) {
+			$is_checked = in_array($tld, $selected_tlds);
+			$register_price = isset($info['register_price']) ? number_format($info['register_price'], 2) . ' ' . $info['currency'] : '';
+
+			echo '<label style="display: block; margin-bottom: 8px;">';
+			echo '<input type="checkbox" name="pointer_domain_search_selected_tlds[]" value="' . esc_attr($tld) . '"' .
+				 ($is_checked ? ' checked' : '') . '>';
+			echo esc_html($tld);
+
+			if (!empty($register_price)) {
+				echo ' <span style="color: #777;">(' . esc_html($register_price) . ')</span>';
+			}
+
+			echo '</label>';
+		}
+
+		echo '</div>';
+
+		// Προσθήκη κουμπιών επιλογής/αποεπιλογής όλων
+		echo '<button type="button" id="select_all_tlds" class="button button-secondary">' .
+			esc_html__('Επιλογή Όλων', 'pointer-domain-search') . '</button> ';
+		echo '<button type="button" id="deselect_all_tlds" class="button button-secondary">' .
+			esc_html__('Αποεπιλογή Όλων', 'pointer-domain-search') . '</button>';
+		echo '</fieldset>';
+
+		// JavaScript για τα κουμπιά επιλογής/αποεπιλογής
+		?>
+		<script>
+			jQuery(document).ready(function($) {
+				$('#select_all_tlds').on('click', function(e) {
+					e.preventDefault();
+					$('.pointer-domain-search-tlds-admin input[type="checkbox"]').prop('checked', true);
+				});
+
+				$('#deselect_all_tlds').on('click', function(e) {
+					e.preventDefault();
+					$('.pointer-domain-search-tlds-admin input[type="checkbox"]').prop('checked', false);
+				});
+			});
+		</script>
+		<?php
+
+	} catch (Exception $e) {
+		echo '<div class="notice notice-error inline"><p>' .
+			esc_html__('Σφάλμα κατά την επικοινωνία με το API: ', 'pointer-domain-search') .
+			esc_html($e->getMessage()) . '</p></div>';
+	}
+}
+
+/**
+ * Render function για το show buy button
+ */
+function pointer_domain_search_show_buy_button_render()
+{
+	$show_buy_button = get_option('pointer_domain_search_show_buy_button', false);
+?>
+	<input type="checkbox" name="pointer_domain_search_show_buy_button" value="1" <?php checked($show_buy_button, true); ?>>
+	<p class="description"><?php esc_html_e('Εμφάνιση κουμπιού αγοράς στο block αναζήτησης', 'pointer-domain-search'); ?></p>
 <?php
 }
 

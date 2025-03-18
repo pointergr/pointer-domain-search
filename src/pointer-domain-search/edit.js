@@ -29,7 +29,7 @@ import './editor.scss';
  *
  * @return {Element} Element to render.
  */
-export default function Edit({ attributes, setAttributes }) {
+export default function Edit({ attributes }) {
 	const { tlds } = attributes;
 
 	return (
@@ -65,7 +65,7 @@ export default function Edit({ attributes, setAttributes }) {
 					</div>
 				</div>
 				<p className="pointer-domain-search-note">
-					{__('Σημείωση: Αυτή είναι μια προεπισκόπηση.', 'pointer-domain-search')}
+					{__('Σημείωση: Αυτή είναι μια προεπισκόπηση. Η εμφάνιση των TLDs καθορίζεται από τις ρυθμίσεις του πρόσθετου.', 'pointer-domain-search')}
 				</p>
 			</div>
 		</div>

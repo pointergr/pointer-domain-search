@@ -181,6 +181,19 @@ class Pointer_API {
 			throw new Exception( 'Domain name is required' );
 		}
 
+		// Αφαιρούμε το www αν υπάρχει
+		$domain = str_replace( 'www.', '', $domain );
+
+		// Ανάκτηση TLD από domain
+		$tld = $this->get_domain_tld( $domain );
+
+		// Βλέπουμε αν το TLD είναι στα επιλεγμένα TLDs στο admin
+		$selected_tlds = get_option( 'pointer_domain_search_selected_tlds', array() );
+		// Αν είναι στα επιλεγμένα και δεν υπάρχει ήδη στα TLDs τότε το προσθέτουμε στα TLDs που θα χρησιμοποιήσουμε για τον έλεγχο
+		if ( in_array( $tld, $selected_tlds ) && ! in_array( $tld, $tlds ) ) {
+			$tlds[] = $tld;
+		}
+
 		// Καθαρισμός domain
 		$domain = $this->sanitize_domain( $domain );
 
@@ -231,6 +244,20 @@ class Pointer_API {
 			$arr[(string) $tld_result->domain] = (string) $tld_result->available;
 		}
 		return $arr;
+	}
+
+	/**
+	 * Ανάκτηση TLD από domain
+	 *
+	 * @since 0.2.0
+	 * @param string $domain Domain name.
+	 * @return string TLD.
+	 */
+	protected function get_domain_tld( $domain )
+	{
+		// To tld είναι το όλα τα μέρη του domain αν το χωρίσουμε με το . εκτός από το πρώτο
+		$parts = explode( '.', $domain );
+		return $parts[count( $parts ) - 1];
 	}
 
 	/**
@@ -310,10 +337,72 @@ class Pointer_API {
 	 */
 	protected function sanitize_tld( $tld )
 	{
-		// Αφαίρεση της τελείας αν υπάρχει στην αρχή
-		$tld = ltrim( $tld, '.' );
+		// Αφαίρεση του . αν υπάρχει στην αρχή
+		if ( substr( $tld, 0, 1 ) === '.' ) {
+			$tld = substr( $tld, 1 );
+		}
 
-		// Καθαρισμός μη έγκυρων χαρακτήρων
-		return preg_replace( '/[^a-z0-9.-]/', '', strtolower( $tld ) );
+		// Καθαρισμός TLD
+		$tld = preg_replace( '/[^a-z0-9-]/', '', strtolower( $tld ) );
+		return $tld;
+	}
+
+	/**
+	 * Ανάκτηση τιμοκαταλόγου TLDs
+	 *
+	 * @since 0.2.0
+	 * @return array Αποτελέσματα τιμοκαταλόγου.
+	 * @throws Exception Σε περίπτωση σφάλματος.
+	 */
+	public function getTldPricing()
+	{
+		// Έλεγχος αν έχει γίνει login
+		if ( empty( $this->key ) ) {
+			throw new Exception( 'You must login before getting TLD pricing' );
+		}
+
+		$chksum = md5( $this->login_username . $this->login_password . 'getProducts' );
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<pointer>
+				<products></products>
+				<username>' . $this->login_username . '</username>
+				<chksum>' . $chksum . '</chksum>
+			</pointer>';
+
+		$result = $this->request( $xml );
+		$xml = $this->parse_request( $result );
+
+		$products = array();
+		$tmp = $xml->xpath( '/pointer/products/item' );
+
+		foreach ( $tmp as $product ) {
+			if ( (string) $product->categoryId == '1' ) {
+
+				// Εάν δεν υπάρχουν τιμές για το registrationPrice ή το renewPrice, τότε δεν προστίθεται το προϊόν στον πίνακα
+				if(!$product->prices->item[0]) {
+					continue;
+				}
+
+				$tld = (string) $product->tld;
+				$min_years = (integer) $product->min_months / 12;
+				$max_years = (integer) $product->max_months / 12;
+				$register_price = (float) $product->prices->item[0]->registrationPrice;
+				$renew_price = (float) $product->prices->item[0]->renewPrice;
+				$transfer_price = (float) $product->transferPrice;
+
+				$products[$tld] = array(
+					'tld'            => $tld,
+					'min_years'      => $min_years,
+					'max_years'      => $max_years,
+					'register_price' => $register_price,
+					'renew_price'    => $renew_price,
+					'transfer_price' => $transfer_price,
+					'currency'       => 'EUR',
+					'epp_required'   => true,
+				);
+			}
+		}
+
+		return $products;
 	}
 }
