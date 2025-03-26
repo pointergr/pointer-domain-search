@@ -1,0 +1,34 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "create-block/pointer-domain-search",
+  "version": "0.2.0",
+  "title": "Domain Search",
+  "category": "widgets",
+  "icon": "search",
+  "description": "Block για αναζήτηση domain names μέσω της υπηρεσίας Pointer.gr",
+  "example": {},
+  "supports": {
+    "html": false
+  },
+  "attributes": {
+    "username": {
+      "type": "string",
+      "default": ""
+    },
+    "password": {
+      "type": "string",
+      "default": ""
+    },
+    "tlds": {
+      "type": "string",
+      "default": "gr|com|net"
+    }
+  },
+  "textdomain": "pointer-domain-search",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php",
+  "viewScript": "file:./view.js"
+}
