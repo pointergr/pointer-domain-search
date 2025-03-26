@@ -3,7 +3,7 @@ Contributors: wpcoders
 Tags: domain, search, pointer, whois, dns
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -107,7 +107,7 @@ Author URI: https://www.pointer.gr
 == Upgrade Notice ==
 
 = 0.2.0 =
-Προσθήκη λειτουργίας τιμοκαταλόγου TLDs και δυνατότητα επιλογής των TLDs από τις ρυθμίσεις του plugin. Αυτόματη ανάκτηση της λίστας TLDs από το API, δυνατότητα εμφάνισης/απόκρυψης του κουμπιού αγοράς και έξυπνη αναγνώριση TLD που πληκτρολογεί ο χρήστης.
+Δυνατότητα επιλογής των TLDs από τις ρυθμίσεις του plugin. Αυτόματη ανάκτηση της λίστας TLDs, κουμπί αγοράς.
 
 = 0.1.0 =
 Αρχική έκδοση του plugin με υποστήριξη κεντρικών ρυθμίσεων, rate limiting, εναλλακτικών θεμάτων και διεθνοποίησης.
