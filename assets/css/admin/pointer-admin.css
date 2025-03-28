@@ -1,0 +1,43 @@
+/**
+ * Admin CSS για το Pointer Domain Search plugin
+ *
+ * @since 0.3.0
+ */
+
+/* TLDs container */
+.pointer-domain-search-tlds-admin {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+/* TLD labels */
+.pointer-domain-search-tlds-admin label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* TLD price */
+.pointer-domain-search-tlds-admin .tld-price {
+    color: #777;
+}
+
+/* API result area */
+#api_credentials_result {
+    margin-top: 10px;
+}
+
+/* Status colors */
+.api-status-verifying {
+    color: #999;
+}
+
+.api-status-success {
+    color: green;
+}
+
+.api-status-error {
+    color: red;
+}

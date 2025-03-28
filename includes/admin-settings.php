@@ -20,7 +20,7 @@ function pointer_domain_search_add_admin_menu()
 		__('Domain Search Settings', 'pointer-domain-search'),
 		__('Domain Search', 'pointer-domain-search'),
 		'manage_options',
-		'pointer-domain-search',
+		'pointer_domain_search_settings',
 		'pointer_domain_search_settings_page'
 	);
 }
@@ -403,19 +403,19 @@ function pointer_domain_search_selected_tlds_render()
 
 		// Εμφάνιση των διαθέσιμων TLDs
 		echo '<fieldset>';
-		echo '<div class="pointer-domain-search-tlds-admin" style="max-height: 300px; overflow-y: auto; padding: 10px; border: 1px solid #ddd; margin-bottom: 15px;">';
+		echo '<div class="pointer-domain-search-tlds-admin">';
 
 		foreach ($tld_pricing as $tld => $info) {
 			$is_checked = in_array($tld, $selected_tlds);
 			$register_price = isset($info['register_price']) ? number_format($info['register_price'], 2) . ' ' . $info['currency'] : '';
 
-			echo '<label style="display: block; margin-bottom: 8px;">';
+			echo '<label>';
 			echo '<input type="checkbox" name="pointer_domain_search_selected_tlds[]" value="' . esc_attr($tld) . '"' .
 				 ($is_checked ? ' checked' : '') . '>';
 			echo esc_html($tld);
 
 			if (!empty($register_price)) {
-				echo ' <span style="color: #777;">(' . esc_html($register_price) . ')</span>';
+				echo ' <span class="tld-price">(' . esc_html($register_price) . ')</span>';
 			}
 
 			echo '</label>';
@@ -429,23 +429,6 @@ function pointer_domain_search_selected_tlds_render()
 		echo '<button type="button" id="deselect_all_tlds" class="button button-secondary">' .
 			esc_html__('Αποεπιλογή Όλων', 'pointer-domain-search') . '</button>';
 		echo '</fieldset>';
-
-		// JavaScript για τα κουμπιά επιλογής/αποεπιλογής
-		?>
-		<script>
-			jQuery(document).ready(function($) {
-				$('#select_all_tlds').on('click', function(e) {
-					e.preventDefault();
-					$('.pointer-domain-search-tlds-admin input[type="checkbox"]').prop('checked', true);
-				});
-
-				$('#deselect_all_tlds').on('click', function(e) {
-					e.preventDefault();
-					$('.pointer-domain-search-tlds-admin input[type="checkbox"]').prop('checked', false);
-				});
-			});
-		</script>
-		<?php
 
 	} catch (Exception $e) {
 		echo '<div class="notice notice-error inline"><p>' .
@@ -465,6 +448,71 @@ function pointer_domain_search_show_buy_button_render()
 	<p class="description"><?php esc_html_e('Εμφάνιση κουμπιού αγοράς στο block αναζήτησης', 'pointer-domain-search'); ?></p>
 <?php
 }
+
+/**
+ * Εγγραφή και φόρτωση των scripts και styles για την admin σελίδα ρυθμίσεων
+ *
+ * @since 0.3.0
+ * @return void
+ */
+function pointer_domain_search_admin_enqueue_scripts($hook) {
+	// Φόρτωση μόνο στη σελίδα ρυθμίσεων του plugin
+	// Debug
+	error_log('Pointer Domain Search: admin_enqueue_scripts hook: ' . $hook);
+
+	// Το hook της σελίδας ρυθμίσεων πρέπει να είναι settings_page_pointer_domain_search_settings
+	if ('settings_page_pointer_domain_search_settings' !== $hook) {
+		error_log('Pointer Domain Search: Hook not matched, bailing');
+		return;
+	}
+
+	error_log('Pointer Domain Search: Loading admin scripts and styles');
+
+	// CSS για το admin
+	$css_version = filemtime(plugin_dir_path(dirname(__FILE__)) . 'assets/css/admin/pointer-admin.css');
+	if (!$css_version) {
+		$css_version = '1.0.0';
+	}
+
+	wp_register_style(
+		'pointer-domain-search-admin',
+		plugin_dir_url(dirname(__FILE__)) . 'assets/css/admin/pointer-admin.css',
+		array(),
+		$css_version
+	);
+
+	wp_enqueue_style('pointer-domain-search-admin');
+
+	// JavaScript για το admin
+	$js_version = filemtime(plugin_dir_path(dirname(__FILE__)) . 'assets/js/admin-settings.js');
+	if (!$js_version) {
+		$js_version = '1.0.0';
+	}
+
+	// Εγγραφή και φόρτωση του αρχείου JavaScript
+	wp_register_script(
+		'pointer-domain-search-admin',
+		plugin_dir_url(dirname(__FILE__)) . 'assets/js/admin-settings.js',
+		array('jquery'),
+		$js_version,
+		true
+	);
+
+	// Προσθήκη των απαραίτητων μεταβλητών για το AJAX
+	wp_localize_script(
+		'pointer-domain-search-admin',
+		'pointerDomainSearchAdmin',
+		array(
+			'ajaxUrl' => admin_url('admin-ajax.php'),
+			'nonce' => wp_create_nonce('pointer_domain_search_verify_nonce'),
+			'verifying' => __('Επαλήθευση...', 'pointer-domain-search'),
+			'serverError' => __('Σφάλμα επικοινωνίας με τον διακομιστή', 'pointer-domain-search')
+		)
+	);
+
+	wp_enqueue_script('pointer-domain-search-admin');
+}
+add_action('admin_enqueue_scripts', 'pointer_domain_search_admin_enqueue_scripts');
 
 /**
  * HTML για τη σελίδα ρυθμίσεων
@@ -518,36 +566,8 @@ function pointer_domain_search_settings_page()
 			<button type="button" id="verify_api_credentials" class="button button-secondary">
 				<?php esc_html_e('Επαλήθευση Διαπιστευτηρίων', 'pointer-domain-search'); ?>
 			</button>
-			<div id="api_credentials_result" style="margin-top: 10px;"></div>
+			<div id="api_credentials_result"></div>
 		</div>
 	</div>
-
-	<script>
-		jQuery(document).ready(function($) {
-			$('#verify_api_credentials').on('click', function() {
-				var $resultArea = $('#api_credentials_result');
-				$resultArea.html('<span style="color: #999;"><?php esc_html_e('Επαλήθευση...', 'pointer-domain-search'); ?></span>');
-
-				$.ajax({
-					url: ajaxurl,
-					type: 'POST',
-					data: {
-						action: 'pointer_domain_search_verify_credentials',
-						nonce: '<?php echo esc_attr(wp_create_nonce('pointer_domain_search_verify_nonce')); ?>'
-					},
-					success: function(response) {
-						if (response.success) {
-							$resultArea.html('<span style="color: green;">' + response.data + '</span>');
-						} else {
-							$resultArea.html('<span style="color: red;">' + response.data + '</span>');
-						}
-					},
-					error: function() {
-						$resultArea.html('<span style="color: red;"><?php esc_html_e('Σφάλμα επικοινωνίας με τον διακομιστή', 'pointer-domain-search'); ?></span>');
-					}
-				});
-			});
-		});
-	</script>
 <?php
 }
