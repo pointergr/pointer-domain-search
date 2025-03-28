@@ -308,22 +308,6 @@ function pointer_domain_search_enqueue_theme_styles()
 }
 add_action('wp_enqueue_scripts', 'pointer_domain_search_enqueue_theme_styles');
 
-/**
- * Εκκίνηση του i18n
- *
- * @since 0.1.0
- * @return void
- */
-function pointer_domain_search_load_textdomain()
-{
-	load_plugin_textdomain(
-		'pointer-domain-search',
-		false,
-		dirname(plugin_basename(__FILE__)) . '/languages'
-	);
-}
-add_action('plugins_loaded', 'pointer_domain_search_load_textdomain');
-
 // Προσθήκη των AJAX endpoints
 add_action('wp_ajax_pointer_domain_search', 'pointer_domain_search_ajax_handler');
 add_action('wp_ajax_nopriv_pointer_domain_search', 'pointer_domain_search_ajax_handler');
