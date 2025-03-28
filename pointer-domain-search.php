@@ -142,26 +142,9 @@ function pointer_domain_search_ajax_handler()
 	$encrypted_password = get_option('pointer_domain_search_password', '');
 	$password          = '';
 
-	// Debug info
-	if (current_user_can('manage_options')) {
-		if (defined('WP_DEBUG') && WP_DEBUG === true) {
-			// phpcs:disable WordPress.PHP.DevelopmentFunctions
-			error_log('Encrypted password from options: ' . $encrypted_password);
-			// phpcs:enable
-		}
-	}
-
 	// Αποκρυπτογράφηση του password αν υπάρχει
 	if (! empty($encrypted_password)) {
 		$password = pointer_domain_search_decrypt_password($encrypted_password);
-		// Debug info
-		if (current_user_can('manage_options')) {
-			if (defined('WP_DEBUG') && WP_DEBUG === true) {
-				// phpcs:disable WordPress.PHP.DevelopmentFunctions
-				error_log('Decrypted password length: ' . strlen($password));
-				// phpcs:enable
-			}
-		}
 	}
 
 	// Έλεγχος αν έχουν οριστεί τα credentials

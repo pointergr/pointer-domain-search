@@ -35,39 +35,63 @@ function pointer_domain_search_register_settings()
 	register_setting(
 		'pointer_domain_search_settings',
 		'pointer_domain_search_username',
-		'sanitize_text_field'
+		array(
+			'type' => 'string',
+			'sanitize_callback' => 'sanitize_text_field',
+			'description' => __('Όνομα χρήστη για το API της Pointer.gr', 'pointer-domain-search')
+		)
 	);
 
 	register_setting(
 		'pointer_domain_search_settings',
 		'pointer_domain_search_password',
-		'pointer_domain_search_encrypt_password'
+		array(
+			'type' => 'string',
+			'sanitize_callback' => 'pointer_domain_search_encrypt_password',
+			'description' => __('Κωδικός πρόσβασης API Pointer.gr (κρυπτογραφημένος)', 'pointer-domain-search')
+		)
 	);
 
 	register_setting(
 		'pointer_domain_search_settings',
 		'pointer_domain_search_rate_limit',
-		'absint'
+		array(
+			'type' => 'integer',
+			'sanitize_callback' => 'absint',
+			'description' => __('Μέγιστος αριθμός αιτημάτων ανά 5 λεπτά', 'pointer-domain-search')
+		)
 	);
 
 	register_setting(
 		'pointer_domain_search_settings',
 		'pointer_domain_search_theme',
-		'pointer_domain_search_sanitize_theme'
+		array(
+			'type' => 'string',
+			'sanitize_callback' => 'pointer_domain_search_sanitize_theme',
+			'description' => __('Θέμα εμφάνισης για το block αναζήτησης', 'pointer-domain-search')
+		)
 	);
 
 	// Προσθήκη νέας ρύθμισης για τα επιλεγμένα TLDs
 	register_setting(
 		'pointer_domain_search_settings',
 		'pointer_domain_search_selected_tlds',
-		'pointer_domain_search_sanitize_selected_tlds'
+		array(
+			'type' => 'array',
+			'sanitize_callback' => 'pointer_domain_search_sanitize_selected_tlds',
+			'description' => __('Επιλεγμένες καταλήξεις domain (TLDs)', 'pointer-domain-search')
+		)
 	);
 
 	// Προσθήκη νέας ρύθμισης για την εμφάνιση του κουμπιού αγοράς
 	register_setting(
 		'pointer_domain_search_settings',
 		'pointer_domain_search_show_buy_button',
-		'pointer_domain_search_sanitize_checkbox'
+		array(
+			'type' => 'boolean',
+			'sanitize_callback' => 'pointer_domain_search_sanitize_checkbox',
+			'description' => __('Εμφάνιση κουμπιού αγοράς για διαθέσιμα domains', 'pointer-domain-search')
+		)
 	);
 
 	// Προσθήκη section για API
@@ -457,16 +481,12 @@ function pointer_domain_search_show_buy_button_render()
  */
 function pointer_domain_search_admin_enqueue_scripts($hook) {
 	// Φόρτωση μόνο στη σελίδα ρυθμίσεων του plugin
-	// Debug
-	error_log('Pointer Domain Search: admin_enqueue_scripts hook: ' . $hook);
 
 	// Το hook της σελίδας ρυθμίσεων πρέπει να είναι settings_page_pointer_domain_search_settings
 	if ('settings_page_pointer_domain_search_settings' !== $hook) {
 		error_log('Pointer Domain Search: Hook not matched, bailing');
 		return;
 	}
-
-	error_log('Pointer Domain Search: Loading admin scripts and styles');
 
 	// CSS για το admin
 	$css_version = filemtime(plugin_dir_path(dirname(__FILE__)) . 'assets/css/admin/pointer-admin.css');
