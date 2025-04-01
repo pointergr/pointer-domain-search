@@ -27,5 +27,8 @@
 		"assets",
 		"pointer-domain-search.php",
 		"readme.txt"
-	]
+	],
+	"volta": {
+		"node": "20.19.0"
+	}
 }
